@@ -1,0 +1,95 @@
+.root {
+    -fx-background-color: #2a2a40;
+    -fx-border-width: 0;
+}
+.label{
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial Rounded MT Bold";
+}
+.title{
+    -fx-font-size: 2.1em !important;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e90ff !important;
+    -fx-font-family: "Arial";
+    -fx-effect: dropshadow(gaussian, #1e90ff, 5, 0.1, 0, 0) !important;
+}
+.button{
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial Rounded MT Bold";
+    -fx-background-color: #2a2a40;
+    -fx-background-radius: 12;
+    -fx-background-insets: 0, 1, 2;
+    -fx-border-color: #1e90ff;
+    -fx-border-width: 4;
+    -fx-border-radius: 8;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(gaussian, #1e90ff, 20, 0.3, 0, 0);
+}
+.button:hover{
+    -fx-background-color: #1e90ff;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #1e90ff , 20, .7, 0, 1);
+}
+.check-in{
+    -fx-background-color: #2a2a40;
+    -fx-border-color: green;
+    -fx-border-width: 4;
+    -fx-border-radius: 8;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(gaussian, #35ff1e, 20, 0.3, 0, 0);
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial Rounded MT Bold";
+}
+.check-in:hover{
+    -fx-background-color: green;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #35ff1e , 20, .7, 0, 1);
+
+}
+.check-out{
+    -fx-background-color: #2a2a40;
+    -fx-border-color: red;
+    -fx-border-width: 4;
+    -fx-border-radius: 8;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(gaussian, #ff1e40, 20, 0.3, 0, 0);
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial Rounded MT Bold";
+}
+.check-out:hover{
+    -fx-background-color: red;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #ff1e40 , 20, .7, 0, 1);
+}
+.text-field {
+    -fx-border-color: #1e90ff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e90ff;
+    -fx-prompt-text-fill: #aaaaaa;
+    -fx-padding: 5 5;
+    -fx-background-radius: 12;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-color: #1a1a2e;
+    -fx-font-family: "Arial Rounded MT Bold";
+}
+.text-field:hover {
+    -fx-border-color: #0f5bb0;
+}
+.text-field:focused {
+    -fx-border-color: #00aaff;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+.text-field:focused{
+    -fx-border-color: #00bcd4;
+}
+
