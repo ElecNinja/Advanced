@@ -44,7 +44,7 @@ public class Main extends Application {
         registerButton.getStyleClass().add("button");
 
         loginButton.setOnAction(e -> showLoginScreen());
-        registerButton.setOnAction(e -> showCustomerInfoPage()); // Replace this with your actual customer info screen method
+        registerButton.setOnAction(e -> showCustomerInfoPage());
 
         vb.getChildren().addAll(welcomeLabel, loginButton, registerButton);
 
@@ -149,6 +149,9 @@ public class Main extends Application {
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
         Button bookingSummaryBtn = new Button("Booking Summary");
+        Button backButton = new Button("← Back");
+        backButton.setOnAction(e -> showLoginScreen());
+        backButton.setMaxWidth(100);
 
         checkInBtn.getStyleClass().add("check-in");
         checkOutBtn.getStyleClass().add("check-out");
@@ -187,7 +190,7 @@ public class Main extends Application {
             }
         });
 
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn);
+        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         Scene scene = new Scene(dashboard, 1525, 750);
