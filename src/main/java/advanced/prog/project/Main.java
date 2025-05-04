@@ -1,3 +1,4 @@
+
 package advanced.prog.project;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
