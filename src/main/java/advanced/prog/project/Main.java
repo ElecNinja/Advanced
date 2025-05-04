@@ -166,7 +166,7 @@ public class Main extends Application {
             hasCheckedIn = true;
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
-//            showBookingPage(); // to be implemented
+// TODO           showBookingPage(); // to be implemented
             // You could later add logic here to save the booking
         });
 
@@ -175,7 +175,7 @@ public class Main extends Application {
             hasCheckedIn = false;
             checkInBtn.setDisable(false);
             checkOutBtn.setDisable(true);
-            // You could later add logic here to finalize/clear bookings
+        //TODO     // You could later add logic here to finalize/clear bookings
         });
 
         // Booking Summary
@@ -240,7 +240,7 @@ public class Main extends Application {
                 System.out.println("Name: " + name);
                 System.out.println("Email: " + email);
                 System.out.println("Phone: " + phone);
-                // Proceed to the next screen
+             // TODO   // Proceed to the next screen
             } catch (NumberFormatException ex) {
                 showAlert("ID must be a number.");
             }
