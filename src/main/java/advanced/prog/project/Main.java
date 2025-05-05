@@ -85,7 +85,6 @@ public class Main extends Application {
         welcomebackLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #4eb0e8;");
         welcomebackLabel.setAlignment(Pos.CENTER);
 
-
         TextField nameField = new TextField();
         nameField.setMaxWidth(300);
         nameField.setPromptText("Enter your name");
