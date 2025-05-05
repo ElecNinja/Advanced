@@ -15,6 +15,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.IOException;
 import java.util.Objects;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Main extends Application {
     private Stage stage;
@@ -90,10 +94,10 @@ public class Main extends Application {
         nameField.setPromptText("Enter your name");
         nameField.setStyle("-fx-font-size: 14px; ");
 
-        TextField emailField = new TextField();
-        emailField.setMaxWidth(300);
-        emailField.setPromptText("Enter your email");
-        emailField.setStyle("-fx-font-size: 14px;");
+        TextField passwordField = new TextField();
+        passwordField.setMaxWidth(300);
+        passwordField.setPromptText("Enter your email");
+        passwordField.setStyle("-fx-font-size: 14px;");
 
         Button loginButton = new Button("Login");
         loginButton.setMaxWidth(150);
@@ -102,17 +106,40 @@ public class Main extends Application {
 
         loginButton.setOnAction(e -> {
             String name = nameField.getText().trim();
-            String email = emailField.getText().trim();
+            String password = passwordField.getText().trim();
 
-            if (name.isEmpty() || email.isEmpty()) {
+            if (name.isEmpty() || password.isEmpty()) {
                 showAlert("All fields must be filled.");
                 return;
             }
 
-            System.out.println("Name: " + name);
-            System.out.println("Email: " + email);
-            showCustomerDashboard();
+            Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
+            if (conn != null) {
+                try {
+                    String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+                    PreparedStatement stmt = conn.prepareStatement(query);
+                    stmt.setString(1, name);
+                    stmt.setString(2, password);
+                    ResultSet rs = stmt.executeQuery();
+
+                    if (rs.next()) {
+                        showCustomerDashboard();
+                    } else {
+                        showAlert("Invalid username or password.");
+                    }
+
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    showAlert("Database error.");
+                }
+            } else {
+                showAlert("Database connection failed.");
+            }
         });
+
 
         Button backButton = new Button("← Back");
         backButton.setMaxWidth(100);
@@ -120,15 +147,15 @@ public class Main extends Application {
 
         // Enable only when both fields have values
         ChangeListener<String> listener = (obs, oldVal, newVal) -> {
-            loginButton.setDisable(nameField.getText().trim().isEmpty() || emailField.getText().trim().isEmpty());
+            loginButton.setDisable(nameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty());
         };
         nameField.textProperty().addListener(listener);
-        emailField.textProperty().addListener(listener);
+        passwordField.textProperty().addListener(listener);
 
 
 
 
-        root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, emailField, loginButton, backButton);
+        root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, passwordField, loginButton, backButton);
 
 
         Scene s3 = new Scene(root, 1525, 750);
@@ -165,7 +192,6 @@ public class Main extends Application {
             hasCheckedIn = true;
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
-// TODO           showBookingPage(); // to be implemented
             // You could later add logic here to save the booking
         });
 
@@ -174,7 +200,6 @@ public class Main extends Application {
             hasCheckedIn = false;
             checkInBtn.setDisable(false);
             checkOutBtn.setDisable(true);
-        //TODO     // You could later add logic here to finalize/clear bookings
         });
 
         // Booking Summary
@@ -209,14 +234,11 @@ public class Main extends Application {
 
 
     private void showCustomerInfoPage() {
-        TextField idField = new TextField();
-        idField.setPromptText("ID");
-        TextField nameField = new TextField();
-        nameField.setPromptText("Name");
-        TextField emailField = new TextField();
-        emailField.setPromptText("Email");
-        TextField phoneField = new TextField();
-        phoneField.setPromptText("Phone");
+        TextField userField = new TextField();
+        userField.setPromptText("New user name");
+        TextField passField = new TextField();
+        passField.setPromptText("Enter password");
+
 
 
 
@@ -224,31 +246,64 @@ public class Main extends Application {
         Button nextButton = new Button("Continue to Booking");
         nextButton.setMaxWidth(250);
         nextButton.setOnAction(e -> {
-            try {
-                int id = Integer.parseInt(idField.getText().trim());
-                String name = nameField.getText().trim();
-                String email = emailField.getText().trim();
-                String phone = phoneField.getText().trim();
+            String name1 = userField.getText().trim();
+            String password1 = passField.getText().trim();
 
-                if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
-                    showAlert("All fields must be filled.");
-                    return;
-                }
-
-                System.out.println("ID: " + id);
-                System.out.println("Name: " + name);
-                System.out.println("Email: " + email);
-                System.out.println("Phone: " + phone);
-             // TODO   // Proceed to the next screen
-            } catch (NumberFormatException ex) {
-                showAlert("ID must be a number.");
+            if (name1.isEmpty() || password1.isEmpty()) {
+                showAlert("All fields must be filled.");
+                return;
             }
+
+            Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
+            if (conn != null) {
+                try {
+                    // Check if username already exists
+                    String checkQuery = "SELECT * FROM users WHERE username = ?";
+                    PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+                    checkStmt.setString(1, name1);
+                    ResultSet checkRs = checkStmt.executeQuery();
+
+                    if (checkRs.next()) {
+                        showAlert("Username already exists. Please choose a different one.");
+                        checkRs.close();
+                        checkStmt.close();
+                        conn.close();
+                        return;
+                    }
+
+                    checkRs.close();
+                    checkStmt.close();
+
+                    // Insert new user
+                    String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+                    PreparedStatement stmt = conn.prepareStatement(query);
+                    stmt.setString(1, name1);
+                    stmt.setString(2, password1);
+                    int rowsInserted = stmt.executeUpdate();
+
+                    if (rowsInserted > 0) {
+                        showCustomerDashboard();
+                    } else {
+                        showAlert("Failed to register user.");
+                    }
+
+                    stmt.close();
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    showAlert("Database error.");
+                }
+            } else {
+                showAlert("Database connection failed.");}
+
         });
+
+
         Button backButton = new Button("← Back");
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
 
-        VBox form = new VBox(10, idField, nameField, emailField, phoneField, nextButton, backButton);
+        VBox form = new VBox(10, userField, passField, nextButton, backButton);
         form.setAlignment(Pos.CENTER);
         form.setPadding(new Insets(20));
         form.setMaxWidth(400);
