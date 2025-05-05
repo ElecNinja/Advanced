@@ -177,9 +177,8 @@ public class Main extends Application {
 
 
     private void showCustomerDashboard(Customer customer) {
-        System.out.println("Test1");
-        final boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername());
-        System.out.println("Test2");
+       // boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
+        boolean hasCheckedIn = customer.isChecked();
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
         Button bookingSummaryBtn = new Button("Booking Summary");
@@ -205,6 +204,8 @@ public class Main extends Application {
         // Check-Out Logic
         checkOutBtn.setOnAction(e -> {
             changeCheckInStatus(customer.getUsername(), false);
+            customer.setChecked(false);
+            showRatingPage(customer);
             checkInBtn.setDisable(false);
             checkOutBtn.setDisable(true);
         });
@@ -237,6 +238,68 @@ public class Main extends Application {
         stage.show();
     }
 
+    private  void showRatingPage(Customer customer){
+        Stage ratingStage = new Stage();;
+        Rating rating = new Rating(customer);
+        VBox root = new VBox(20);
+        root.setPadding(new Insets(20));
+        root.setAlignment(Pos.CENTER);
+        Label titleLabel = new Label("Rate Your Experience");
+        titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: #4eb0e8;");
+        TextField ratingField = new TextField();
+        ratingField.setMaxWidth(300);
+        ratingField.setPromptText("Enter your rating (1-5)");
+        ratingField.setStyle("-fx-font-size: 14px; ");
+        TextArea commentField = new TextArea();
+        commentField.setMaxWidth(300);
+        commentField.setMaxHeight(100);
+        commentField.setPromptText("Enter your comment");
+        commentField.setStyle("-fx-font-size: 14px;");
+        Button submitButton = new Button("Submit Rating");
+        submitButton.setMaxWidth(150);
+        submitButton.setStyle(" -fx-text-fill: white; -fx-font-size: 16px;");
+        submitButton.setOnAction(e -> {
+            String ratingText = ratingField.getText().trim();
+            String commentText = commentField.getText().trim();
+            if (ratingText.isEmpty() || commentText.isEmpty()) {
+                showAlert("All fields must be filled.");
+                return;
+            }
+            try {
+                int ratingValue = Integer.parseInt(ratingText);
+                if (ratingValue < 1 || ratingValue > 5) {
+                    showAlert("Rating must be between 1 and 5.");
+                    return;
+                }
+                rating.setRating(ratingValue);
+                rating.setComment(commentText);
+                showAlert("Thank you for your feedback!");
+                ratingStage.close();
+//           DB Code TODO     // Save the rating to the database
+//                try (Connection conn = DBconnection.connect()) {
+//                    String query = "INSERT INTO ratings (username, rating, comment) VALUES (?, ?, ?)";
+//                    PreparedStatement stmt = conn.prepareStatement(query);
+//                    stmt.setString(1, customer.getUsername());
+//                    stmt.setInt(2, ratingValue);
+//                    stmt.setString(3, commentText);
+//                    stmt.executeUpdate();
+//                    stmt.close();
+//                } catch (SQLException ex) {
+//                    showAlert("Database error.");
+//                }
+            } catch (NumberFormatException ex) {
+                showAlert("Invalid input for rating.");
+            }
+        });
+        ratingStage.setTitle("Rate Your Experience");
+        ratingStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        root.getChildren().addAll(titleLabel, ratingField, commentField, submitButton);
+        Scene scene = new Scene(root, 500, 500);
+        scene.getStylesheets().add("styles.css");
+        ratingStage.setScene(scene);
+        ratingStage.show();
+    }
+
     private boolean fetchCheckInStatus(String username) {
         boolean checkedIn = false;  // default to not checked-in
         try (Connection conn = DBconnection.connect()) {
@@ -257,7 +320,7 @@ public class Main extends Application {
 
     private boolean changeCheckInStatus(String username, boolean checkIn) {
         try (Connection conn = DBconnection.connect()) {
-            String query = "UPDATE users SET checked_in = ? WHERE username = ?";
+            String query = "UPDATE users SET checked = ? WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setInt(1, checkIn ? 1 : 0);
             stmt.setString(2, username);
@@ -488,6 +551,9 @@ public class Main extends Application {
 
                 Booking booking = hotel.bookRoom(customer, selectedRoom, start, days, selectedRoom.getPricePerNight() * days);
                 selectedRoom.isAvailable = false;
+                selectedRoom.setCustomer(customer);
+                customer.setChecked(true);
+        //        changeCheckInStatus(customer.getUsername(), true); // DB Code
                 if (booking != null) {
                     confirmationMessage.setText("");
                     double totalCost = selectedRoom.getPricePerNight() * days;
