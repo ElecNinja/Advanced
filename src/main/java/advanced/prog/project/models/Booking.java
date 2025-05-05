@@ -1,29 +1,23 @@
 package advanced.prog.project.models;
 import java.time.LocalDate;
 public class Booking {
-        private int bookingId;
         private Customer customer;
         private Room room;
         private LocalDate checkInDate;
-        private LocalDate checkOutDate;
+        private int nights;
+
+        private double totalCost;
 
 
-        public Booking(int bookingId, Customer customer, Room room,
-                       LocalDate checkInDate, LocalDate checkOutDate) {
-            this.bookingId = bookingId;
+        public Booking(Customer customer, Room room,
+                       LocalDate checkInDate, int nights , double totalCost) {
             this.customer = customer;
             this.room = room;
             this.checkInDate = checkInDate;
-            this.checkOutDate = checkOutDate;
+            this.nights = nights;
+            this.totalCost = totalCost;
         }
 
-        public int getBookingId() {
-            return bookingId;
-        }
-
-        public void setBookingId(int bookingId) {
-            this.bookingId = bookingId;
-        }
 
         public Customer getCustomer() {
             return customer;
@@ -45,17 +39,21 @@ public class Booking {
             return checkInDate;
         }
 
+        public int getNights() {
+            return nights;
+        }
+
         public void setCheckInDate(LocalDate checkInDate) {
             this.checkInDate = checkInDate;
         }
 
-        public LocalDate getCheckOutDate() {
-            return checkOutDate;
-        }
-
-        public void setCheckOutDate(LocalDate checkOutDate) {
-            this.checkOutDate = checkOutDate;
-        }
+    @Override
+    public String toString() {
+        return customer.getUsername() + " booked " +
+                room.getRoomType() + " Room #" + room.getRoomNumber() +
+                " starting " + checkInDate +
+                ". Total: $" + totalCost;
+    }
     }
 
 

@@ -1,20 +1,20 @@
 package advanced.prog.project.models;
 
 public class Customer {
-    private String Email;
+    private String username;
     private String password;
 
-    public Customer(String email, String password) {
-        Email = email;
+    public Customer(String name, String password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getEmail() {
-        return Email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        Email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
