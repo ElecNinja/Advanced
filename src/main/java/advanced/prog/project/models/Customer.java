@@ -1,4 +1,4 @@
-package advanced.prog.project;
+package advanced.prog.project.models;
 
 public class Customer {
     private String Email;

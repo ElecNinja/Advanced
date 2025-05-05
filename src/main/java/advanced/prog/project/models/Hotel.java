@@ -5,7 +5,6 @@ public class Hotel {
     private String address;
     private String phoneNumber;
     private String email;
-    private String website;
 
     public Hotel() {
         this.name = name;
@@ -30,7 +29,5 @@ public class Hotel {
         return email;
     }
 
-    public String getWebsite() {
-        return website;
-    }
+
 }

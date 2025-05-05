@@ -1,6 +1,4 @@
-package advanced.prog.project;
-
-import advanced.prog.project.models.Hotel;
+package advanced.prog.project.models;
 
 public abstract class Room extends Hotel {
     protected int roomNumber;
