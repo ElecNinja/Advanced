@@ -7,7 +7,7 @@ public class Hotel {
     private String email;
     private String website;
 
-    public Hotel(String name, String address, String phoneNumber, String email) {
+    public Hotel() {
         this.name = name;
         this.address = address;
         this.phoneNumber = phoneNumber;
