@@ -1,10 +1,13 @@
 package advanced.prog.project;
 
-public abstract class Room {
+import advanced.prog.project.models.Hotel;
+
+public abstract class Room extends Hotel {
     protected int roomNumber;
     protected double pricePerNight;
 
     public Room(int roomNumber, double pricePerNight) {
+        super();
         this.roomNumber = roomNumber;
         this.pricePerNight = pricePerNight;
     }
