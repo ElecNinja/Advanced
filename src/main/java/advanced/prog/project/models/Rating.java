@@ -1,4 +1,4 @@
-package advanced.prog.project;
+package advanced.prog.project.models;
 import java.time.LocalDate;
 public class Rating {
         private int ratingId;

@@ -1,5 +1,6 @@
 
 package advanced.prog.project;
+import advanced.prog.project.models.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -11,9 +12,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,8 +27,25 @@ import java.sql.SQLException;
 
 public class Main extends Application {
     private Stage stage;
+    private Hotel hotel;
     @Override
     public void start(Stage stage) throws IOException {
+        hotel = new Hotel("Hotel Ritz");
+        SingleRoom singleRoom = new SingleRoom(101, 100.0, null);
+        hotel.addRoom(new SingleRoom(101, 100.0, null));
+        hotel.addRoom(new SingleRoom(102, 100.0, null));
+        hotel.addRoom(new SingleRoom(103, 110.0, null));
+
+
+        hotel.addRoom(new DoubleRoom(201, 150.0, null));
+        hotel.addRoom(new DoubleRoom(202, 160.0, null));
+
+
+        hotel.addRoom(new TripleRoom(301, 200.0, null));
+        hotel.addRoom(new TripleRoom(302, 210.0, null));
+
+
+        hotel.addRoom(singleRoom);
         this.stage = stage;
     showWelcomeScreen();
     }
@@ -67,7 +89,6 @@ public class Main extends Application {
         s3.getStylesheets().add("styles.css");
         stage.setTitle("Home Page");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        s3.setFill(Color.rgb(42,42,62)); // This is the line that was added to fix the issue
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
@@ -96,7 +117,7 @@ public class Main extends Application {
 
         TextField passwordField = new TextField();
         passwordField.setMaxWidth(300);
-        passwordField.setPromptText("Enter your email");
+        passwordField.setPromptText("Enter your password");
         passwordField.setStyle("-fx-font-size: 14px;");
 
         Button loginButton = new Button("Login");
@@ -107,6 +128,7 @@ public class Main extends Application {
         loginButton.setOnAction(e -> {
             String name = nameField.getText().trim();
             String password = passwordField.getText().trim();
+
 
             if (name.isEmpty() || password.isEmpty()) {
                 showAlert("All fields must be filled.");
@@ -123,7 +145,7 @@ public class Main extends Application {
                     ResultSet rs = stmt.executeQuery();
 
                     if (rs.next()) {
-                        showCustomerDashboard();
+                        showCustomerDashboard(new Customer(name, password));
                     } else {
                         showAlert("Invalid username or password.");
                     }
@@ -132,7 +154,6 @@ public class Main extends Application {
                     stmt.close();
                     conn.close();
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
                     showAlert("Database error.");
                 }
             } else {
@@ -152,11 +173,7 @@ public class Main extends Application {
         nameField.textProperty().addListener(listener);
         passwordField.textProperty().addListener(listener);
 
-
-
-
         root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, passwordField, loginButton, backButton);
-
 
         Scene s3 = new Scene(root, 1525, 750);
         s3.getStylesheets().add("styles.css");
@@ -170,9 +187,12 @@ public class Main extends Application {
         fadeIn.play();
     }
 
-    private boolean hasCheckedIn = false; // Default to false, updated after check-in
 
-    private void showCustomerDashboard() {
+
+    private void showCustomerDashboard(Customer customer) {
+        System.out.println("Test1");
+        final boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername());
+        System.out.println("Test2");
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
         Button bookingSummaryBtn = new Button("Booking Summary");
@@ -189,15 +209,15 @@ public class Main extends Application {
 
         // Check-In Logic
         checkInBtn.setOnAction(e -> {
-            hasCheckedIn = true;
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
+            showBookingPage(customer);
             // You could later add logic here to save the booking
         });
 
         // Check-Out Logic
         checkOutBtn.setOnAction(e -> {
-            hasCheckedIn = false;
+            changeCheckInStatus(customer.getUsername(), false);
             checkInBtn.setDisable(false);
             checkOutBtn.setDisable(true);
         });
@@ -230,14 +250,50 @@ public class Main extends Application {
         stage.show();
     }
 
+    private boolean fetchCheckInStatus(String username) {
+        boolean checkedIn = false;  // default to not checked-in
+        try (Connection conn = DBconnection.connect()) {
+            String query = "SELECT checked FROM users WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                checkedIn = rs.getInt("checked") == 1;
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+           showAlert("Database error.");
+        }
+        return checkedIn;
+    }
+
+    private boolean changeCheckInStatus(String username, boolean checkIn) {
+        try (Connection conn = DBconnection.connect()) {
+            String query = "UPDATE users SET checked_in = ? WHERE username = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, checkIn ? 1 : 0);
+            stmt.setString(2, username);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+           showAlert("Database error.");
+        }
+        return false;
+    }
+
+
 
 
 
     private void showCustomerInfoPage() {
+
         TextField userField = new TextField();
         userField.setPromptText("New user name");
         TextField passField = new TextField();
         passField.setPromptText("Enter password");
+
+        Customer currentCustomer = new Customer(userField.getText(), passField.getText());
 
 
 
@@ -275,14 +331,15 @@ public class Main extends Application {
                     checkStmt.close();
 
                     // Insert new user
-                    String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+                    String query = "INSERT INTO users (username, password, checked) VALUES (?, ?, ?)";
                     PreparedStatement stmt = conn.prepareStatement(query);
                     stmt.setString(1, name1);
                     stmt.setString(2, password1);
+                    stmt.setInt(3, 0);
                     int rowsInserted = stmt.executeUpdate();
 
                     if (rowsInserted > 0) {
-                        showCustomerDashboard();
+                        showCustomerDashboard(currentCustomer);
                     } else {
                         showAlert("Failed to register user.");
                     }
@@ -320,6 +377,218 @@ public class Main extends Application {
         fadeIn.play();
         stage.show();
     }
+
+    private void showBookingPage(Customer customer) {
+        VBox mainContainer = new VBox(20);
+        mainContainer.setPadding(new Insets(20));
+        mainContainer.setAlignment(Pos.TOP_CENTER);
+
+        // Page Title
+        Label titleLabel = new Label("Room Booking");
+        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+
+        // Filter Section
+        HBox filterBox = new HBox(15);
+        filterBox.setAlignment(Pos.CENTER);
+
+        ComboBox<String> roomTypeFilter = new ComboBox<>();
+        roomTypeFilter.getItems().addAll("All", "Single", "Double", "Triple");
+        roomTypeFilter.setValue("All");
+        roomTypeFilter.setPrefWidth(120);
+
+        TextField searchField = new TextField();
+        searchField.setPromptText("Search by room number...");
+        searchField.setPrefWidth(200);
+
+        Button resetButton = new Button("Reset");
+        resetButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+
+        filterBox.getChildren().addAll(
+                new Label("Filter by:"), roomTypeFilter,
+                new Label("Search:"), searchField,
+                resetButton
+        );
+
+        // Rooms Grid
+        GridPane roomsGrid = new GridPane();
+        roomsGrid.setHgap(15);
+        roomsGrid.setVgap(15);
+        roomsGrid.setAlignment(Pos.CENTER);
+        roomsGrid.setPadding(new Insets(20));
+
+        // Booking Form
+        VBox bookingForm = new VBox(15);
+        bookingForm.setAlignment(Pos.CENTER);
+        bookingForm.setPadding(new Insets(20));
+        bookingForm.setStyle("-fx-background-color: #f9f9f9; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+        DatePicker startDatePicker = new DatePicker(LocalDate.now());
+        TextField nightsField = new TextField();
+        nightsField.setPromptText("Number of nights");
+
+        Spinner<Integer> adultsSpinner = new Spinner<>(1, 10, 1);
+        Spinner<Integer> childrenSpinner = new Spinner<>(0, 5, 0);
+
+        Button bookButton = new Button("Confirm Booking");
+        bookButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        HBox formFields = new HBox(15);
+        formFields.setAlignment(Pos.CENTER);
+        formFields.getChildren().addAll(
+                createFormField("Check-in Date", startDatePicker),
+                createFormField("Nights", nightsField),
+                createFormField("Adults", adultsSpinner),
+                createFormField("Children", childrenSpinner)
+        );
+
+        bookingForm.getChildren().addAll(formFields, bookButton);
+
+        // Add components to main container
+        mainContainer.getChildren().addAll(titleLabel, filterBox, roomsGrid, bookingForm);
+
+        // Event Handlers
+        roomTypeFilter.setOnAction(e -> updateRoomsDisplay(roomsGrid, roomTypeFilter.getValue(), searchField.getText()));
+        searchField.textProperty().addListener((obs, oldVal, newVal) ->
+                updateRoomsDisplay(roomsGrid, roomTypeFilter.getValue(), newVal));
+        resetButton.setOnAction(e -> {
+            roomTypeFilter.setValue("All");
+            searchField.clear();
+        });
+
+        bookButton.setOnAction(e -> handleBooking(
+                customer, roomsGrid,
+                startDatePicker.getValue(),
+                nightsField.getText(),
+                adultsSpinner.getValue(),
+                childrenSpinner.getValue()
+        ));
+
+        // Initial rooms display
+        updateRoomsDisplay(roomsGrid, "All", "");
+
+        Scene scene = new Scene(mainContainer, 1525, 750);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private VBox createFormField(String label, Control field) {
+        VBox container = new VBox(5);
+        Label fieldLabel = new Label(label);
+        fieldLabel.setStyle("-fx-font-weight: bold;");
+        container.getChildren().addAll(fieldLabel, field);
+        container.setAlignment(Pos.CENTER);
+        return container;
+    }
+
+    private void updateRoomsDisplay(GridPane grid, String filter, String searchText) {
+        grid.getChildren().clear();
+
+        int col = 0, row = 0;
+        for (Room room : hotel.getAllRooms()) {
+            if (matchesFilter(room, filter) && matchesSearch(room, searchText)) {
+                ToggleButton roomBtn = createRoomButton(room);
+                grid.add(roomBtn, col, row);
+
+                if (++col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+    }
+
+    private boolean matchesFilter(Room room, String filter) {
+        return filter.equals("All") ||
+                (filter.equals("Single") && room instanceof SingleRoom) ||
+                (filter.equals("Double") && room instanceof DoubleRoom) ||
+                (filter.equals("Triple") && room instanceof TripleRoom);
+    }
+
+    private boolean matchesSearch(Room room, String searchText) {
+        return String.valueOf(room.getRoomNumber()).contains(searchText);
+    }
+
+    private ToggleButton createRoomButton(Room room) {
+        ToggleButton btn = new ToggleButton();
+        btn.setMinSize(150, 120);
+        btn.setMaxSize(150, 120);
+
+        VBox content = new VBox(5);
+        content.setAlignment(Pos.CENTER);
+
+        Label number = new Label("Room " + room.getRoomNumber());
+        number.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+
+        Label type = new Label(getRoomTypeName(room));
+        type.setStyle("-fx-font-size: 14;");
+
+        Label price = new Label("$" + room.getPricePerNight() + "/night");
+        price.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+
+        content.getChildren().addAll(number, type, price);
+        btn.setGraphic(content);
+
+        // Style by room type
+        String style = "-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2; ";
+        if (room instanceof SingleRoom) {
+            btn.setStyle(style + "-fx-background-color: #e3f2fd; -fx-border-color: #bbdefb;");
+        }
+        else if (room instanceof DoubleRoom) {
+            btn.setStyle(style + "-fx-background-color: #e8f5e9; -fx-border-color: #c8e6c9;");
+        }
+        else if (room instanceof TripleRoom) {
+            btn.setStyle(style + "-fx-background-color: #fff3e0; -fx-border-color: #ffe0b2;");
+        }
+
+        btn.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                btn.setStyle(btn.getStyle() + "-fx-border-color: #3498db;");
+            } else {
+                btn.setStyle(btn.getStyle().replace("-fx-border-color: #3498db;",
+                        room instanceof SingleRoom ? "-fx-border-color: #bbdefb;" :
+                                room instanceof DoubleRoom ? "-fx-border-color: #c8e6c9;" :
+                                        "-fx-border-color: #ffe0b2;"));
+            }
+        });
+
+        return btn;
+    }
+
+    private String getRoomTypeName(Room room) {
+        if (room instanceof SingleRoom) return "Single";
+        if (room instanceof DoubleRoom) return "Double";
+        if (room instanceof TripleRoom) return "Triple";
+        return "";
+    }
+
+    private void handleBooking(Customer customer, GridPane roomsGrid,
+                               LocalDate startDate, String nightsText,
+                               int adults, int children) {
+        try {
+            int nights = Integer.parseInt(nightsText);
+            if (nights <= 0) {
+                showAlert("Error", "Number of nights must be greater than zero");
+                return;
+            }
+
+            // Actual booking logic would go here
+            showAlert("Success", "Room booked successfully");
+            updateRoomsDisplay(roomsGrid, "All", "");
+
+        } catch (NumberFormatException e) {
+            showAlert("Error", "Please enter a valid number of nights");
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.OK);
