@@ -25,14 +25,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static advanced.prog.project.models.Hotel.syncRoomAvailability;
+
 public class Main extends Application {
     private Stage stage;
     private Hotel hotel;
     @Override
     public void start(Stage stage) throws IOException {
-        hotel = new Hotel("Hotel Ritz");
-        SingleRoom singleRoom = new SingleRoom(101, 100.0, null);
-        hotel.addRoom(singleRoom);
+        this.hotel = new Hotel("Hotel Ritz");
+        Hotel.loadRoomsFromDB();
+//        DoubleRoom doubleroom = new DoubleRoom(103, 200.0);
+//        DBOperations.addRoom(doubleroom);
         this.stage = stage;
     showWelcomeScreen();
     }
@@ -55,12 +58,17 @@ public class Main extends Application {
         loginButton.getStyleClass().add("button");
         Button registerButton = new Button("New Here? Register with us");
 
+        Button ReviewsButton = new Button("Reviews");
+
+
+
         registerButton.getStyleClass().add("button");
 
         loginButton.setOnAction(e -> showLoginScreen());
         registerButton.setOnAction(e -> showCustomerInfoPage());
+        ReviewsButton.setOnAction(e -> showReviewsPage());
 
-        vb.getChildren().addAll(welcomeLabel, loginButton, registerButton);
+        vb.getChildren().addAll(welcomeLabel, loginButton, registerButton, ReviewsButton);
 
         StackPane root = new StackPane();
         ImageView bgImageView = new ImageView(
@@ -81,6 +89,85 @@ public class Main extends Application {
         fadeIn.setToValue(1.0);
         fadeIn.play();
         stage.show();
+    }
+
+    private void showReviewsPage() {
+        VBox root = new VBox(20);
+        root.setPadding(new Insets(20));
+        root.setAlignment(Pos.CENTER);
+
+        Label titleLabel = new Label("Customer Reviews");
+        titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
+        titleLabel.setAlignment(Pos.CENTER);
+
+        root.getChildren().add(titleLabel);
+
+
+
+        // Fetch reviews from the database
+
+        String query = "SELECT user_id, rating, date, comment FROM ratings";
+        try (Connection conn = DBconnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (!rs.isBeforeFirst()) {
+                Label noReviewsLabel = new Label("No reviews available.");
+                noReviewsLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #4eb0e8;");
+                root.getChildren().add(noReviewsLabel);
+            }
+            System.out.println("test before");
+            while (rs.next()) {
+                int userId = rs.getInt("user_id");
+                String Username = DBOperations.getUsernameID(userId); // Assuming this method fetches the username based on userId
+                int rating = rs.getInt("rating");
+                String date = rs.getString("date");
+                String comment = rs.getString("comment");
+
+                // Create a review card
+                HBox reviewCard = new HBox(10);
+                Label userLabel = new Label(Username);
+                Label ratingLabel = new Label(" " + rating + " stars");
+                Label dateLabel = new Label(date);
+
+                Label commentLabel = new Label(comment);
+                userLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: #4ed1e8;");
+                ratingLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: #8eff98;");
+                dateLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: #9bfffe;");
+                commentLabel.setStyle("-fx-font-size: 22 px; -fx-text-fill: #29d7d7;");
+
+                reviewCard.getChildren().addAll(userLabel, ratingLabel, dateLabel);
+                VBox ratingBox = new VBox(5);
+                ratingBox.getChildren().addAll(reviewCard, commentLabel);
+                ratingBox.setAlignment(Pos.CENTER_LEFT);
+                ratingBox.setPadding(new Insets(10));
+//                ratingBox.setStyle("-fx-background-color: #2a2a40; -fx-border-color: #2a2a30; -fx-border-radius: 8px;");
+                ratingBox.getStyleClass().add("rating-box");
+
+                root.getChildren().add(ratingBox);
+            }
+            System.out.println("test after");
+        } catch (SQLException e) {
+            showAlert("Database error.");
+        }
+
+
+
+        Button backButton = new Button("← Back");
+        backButton.setMaxWidth(100);
+        backButton.setOnAction(e -> showWelcomeScreen());
+        root.getChildren().add(backButton);
+        Scene scene = new Scene(root, 1525, 750);
+        scene.getStylesheets().add("styles.css");
+        stage.setTitle("Customer Reviews");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
+        stage.setScene(scene);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+        stage.show();
+
     }
 
     private void showLoginScreen() {
@@ -177,8 +264,7 @@ public class Main extends Application {
 
 
     private void showCustomerDashboard(Customer customer) {
-       // boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
-        boolean hasCheckedIn = customer.isChecked();
+        boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
         Button bookingSummaryBtn = new Button("Booking Summary");
@@ -198,12 +284,11 @@ public class Main extends Application {
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
             showBookingPage(customer);
-            // You could later add logic here to save the booking
         });
 
         // Check-Out Logic
         checkOutBtn.setOnAction(e -> {
-            changeCheckInStatus(customer.getUsername(), false);
+            DBOperations.checkOutRoom(DBOperations.getIdUsername(customer.getUsername()));
             customer.setChecked(false);
             showRatingPage(customer);
             checkInBtn.setDisable(false);
@@ -212,7 +297,7 @@ public class Main extends Application {
 
         // Booking Summary
         bookingSummaryBtn.setOnAction(e -> {
-            if (hasCheckedIn) {
+            if (customer.isChecked()) {
                 System.out.println("Booking Summary: (Dummy Data)");
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -274,18 +359,9 @@ public class Main extends Application {
                 rating.setComment(commentText);
                 showAlert("Thank you for your feedback!");
                 ratingStage.close();
-//           DB Code TODO     // Save the rating to the database
-//                try (Connection conn = DBconnection.connect()) {
-//                    String query = "INSERT INTO ratings (username, rating, comment) VALUES (?, ?, ?)";
-//                    PreparedStatement stmt = conn.prepareStatement(query);
-//                    stmt.setString(1, customer.getUsername());
-//                    stmt.setInt(2, ratingValue);
-//                    stmt.setString(3, commentText);
-//                    stmt.executeUpdate();
-//                    stmt.close();
-//                } catch (SQLException ex) {
-//                    showAlert("Database error.");
-//                }
+                int user_id = DBOperations.getIdUsername(customer.getUsername());
+                int booking_id = DBOperations.getBooking(user_id);
+                DBOperations.insertRating(user_id, booking_id, ratingValue, LocalDate.now(), commentText);
             } catch (NumberFormatException ex) {
                 showAlert("Invalid input for rating.");
             }
@@ -317,20 +393,6 @@ public class Main extends Application {
         return checkedIn;
     }
 
-    private boolean changeCheckInStatus(String username, boolean checkIn) {
-        try (Connection conn = DBconnection.connect()) {
-            String query = "UPDATE users SET checked = ? WHERE username = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, checkIn ? 1 : 0);
-            stmt.setString(2, username);
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-           showAlert("Database error.");
-        }
-        return false;
-    }
-
 
 
 
@@ -339,7 +401,9 @@ public class Main extends Application {
 
         TextField userField = new TextField();
         userField.setPromptText("New user name");
+        userField.setMaxWidth(350);
         TextField passField = new TextField();
+        passField.setMaxWidth(350);
         passField.setPromptText("Enter password");
 
         Customer currentCustomer = new Customer(userField.getText(), passField.getText());
@@ -380,7 +444,7 @@ public class Main extends Application {
                     checkStmt.close();
 
                     // Insert new user
-                    String query = "INSERT INTO users (username, password, checked) VALUES (?, ?, ?)";
+                    String query = "INSERT INTO users (username, password) VALUES (?, ?, ?)";
                     PreparedStatement stmt = conn.prepareStatement(query);
                     stmt.setString(1, name1);
                     stmt.setString(2, password1);
@@ -411,9 +475,8 @@ public class Main extends Application {
 
         VBox form = new VBox(10, userField, passField, nextButton, backButton);
         form.setAlignment(Pos.CENTER);
-        form.setPadding(new Insets(20));
         form.setMaxWidth(400);
-        VBox.setMargin(backButton, new Insets(10, 20, 10, 20));
+        VBox.setMargin(nextButton, new Insets(10, 20, 10, 20));
 
         Scene scene = new Scene(form, 1525, 750);
         scene.getStylesheets().add("styles.css");
@@ -487,7 +550,7 @@ public class Main extends Application {
                 }
             }
         };
-
+        syncRoomAvailability();
         updateGrid.run();
 
         filterBox.setOnAction(e -> updateGrid.run());
@@ -552,6 +615,7 @@ public class Main extends Application {
                 selectedRoom.isAvailable = false;
                 selectedRoom.setCustomer(customer);
                 customer.setChecked(true);
+                DBOperations.bookRoom(DBOperations.getIdUsername(customer.getUsername()), selectedRoom.getRoomNumber(), start, days,selectedRoom.getPricePerNight() * days);
         //        changeCheckInStatus(customer.getUsername(), true); // DB Code
                 if (booking != null) {
                     confirmationMessage.setText("");

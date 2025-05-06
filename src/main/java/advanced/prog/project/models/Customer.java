@@ -7,7 +7,7 @@ public class Customer {
     private boolean checked;
 
     public Customer(String name, String password) {
-        this.username = username;
+        this.username = name;
         this.password = password;
     }
 
