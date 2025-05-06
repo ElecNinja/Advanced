@@ -32,6 +32,19 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         hotel = new Hotel("Hotel Ritz");
         SingleRoom singleRoom = new SingleRoom(101, 100.0, null);
+        hotel.addRoom(new SingleRoom(101, 100.0, null));
+        hotel.addRoom(new SingleRoom(102, 100.0, null));
+        hotel.addRoom(new SingleRoom(103, 110.0, null));
+
+
+        hotel.addRoom(new DoubleRoom(201, 150.0, null));
+        hotel.addRoom(new DoubleRoom(202, 160.0, null));
+
+
+        hotel.addRoom(new TripleRoom(301, 200.0, null));
+        hotel.addRoom(new TripleRoom(302, 210.0, null));
+
+
         hotel.addRoom(singleRoom);
         this.stage = stage;
     showWelcomeScreen();
@@ -429,88 +442,68 @@ public class Main extends Application {
     }
 
     private void showBookingPage(Customer customer) {
-        VBox root = new VBox(10);
-        root.setPadding(new Insets(20));
+        VBox mainContainer = new VBox(20);
+        mainContainer.setPadding(new Insets(20));
+        mainContainer.setAlignment(Pos.TOP_CENTER);
 
-        VBox root2 = new VBox(10);
-        root2.setPadding(new Insets(20));
-        root2.setAlignment(Pos.CENTER);
+        // Page Title
+        Label titleLabel = new Label("Room Booking");
+        titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
+        // Filter Section
+        HBox filterBox = new HBox(15);
+        filterBox.setAlignment(Pos.CENTER);
 
-        ComboBox<String> filterBox = new ComboBox<>();
-        filterBox.getItems().addAll("All", "Single", "Double", "Triple", "Suite");
-        filterBox.setValue("All");
+        ComboBox<String> roomTypeFilter = new ComboBox<>();
+        roomTypeFilter.getItems().addAll("All", "Single", "Double", "Triple");
+        roomTypeFilter.setValue("All");
+        roomTypeFilter.setPrefWidth(120);
 
         TextField searchField = new TextField();
-        searchField.setPromptText("Search by room number or bed type...");
+        searchField.setPromptText("Search by room number...");
+        searchField.setPrefWidth(200);
 
-        GridPane roomGrid = new GridPane();
-        roomGrid.setHgap(10);
-        roomGrid.setVgap(10);
-        roomGrid.setPadding(new Insets(10));
+        Button resetButton = new Button("Reset");
+        resetButton.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
 
-        ToggleGroup roomToggleGroup = new ToggleGroup();
-
-        Runnable updateGrid = () -> {
-            roomGrid.getChildren().clear(); // Clear previous grid content
-
-            String filter = filterBox.getValue();
-            String searchText = searchField.getText().toLowerCase();
-            int col = 0, row = 0;
-
-            for (Room room : hotel.getAllRooms()) {
-                // Filter by Room Type and Search Text
-                boolean matchesFilter = filter.equals("All") || room.getClass().getSimpleName().startsWith(filter);
-                boolean matchesSearch = String.valueOf(room.getRoomNumber()).contains(searchText);
-
-                if (!matchesFilter || !matchesSearch) continue;
-                ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
-                roomBtn.setMinSize(100, 60);
-                roomBtn.setUserData(room);
-
-                roomBtn.setToggleGroup(roomToggleGroup);
-
-                roomBtn.setOnAction(ev -> {
-                    for (Toggle toggle : roomToggleGroup.getToggles()) {
-                        Room r = (Room) toggle.getUserData();
-                        ((ToggleButton) toggle).setStyle(r.isAvailable ?
-                                "-fx-background-color: #6fcf97;" : "-fx-background-color: #eb5757;");
-                    }
-                    roomBtn.setStyle("-fx-background-color: #2d9cdb; -fx-text-fill: white;");
-                });
-                roomBtn.setStyle(room.isAvailable ? "-fx-background-color: #6fcf97;" : "-fx-background-color: #eb5757;");
-                roomBtn.setDisable(!room.isAvailable);
-                Tooltip.install(roomBtn, new Tooltip("Price: $" + room.getPricePerNight()));
-                roomGrid.add(roomBtn, col++, row);
-                if (col == 8) {
-                    col = 0;
-                    row++;
-                }
-            }
-        };
-
-        updateGrid.run();
-
-        filterBox.setOnAction(e -> updateGrid.run());
-        searchField.setOnKeyReleased(e -> updateGrid.run());
-
-        root.getChildren().addAll(
-                new Label("Filter by Room Type:"), filterBox,
+        filterBox.getChildren().addAll(
+                new Label("Filter by:"), roomTypeFilter,
                 new Label("Search:"), searchField,
-                roomGrid
+                resetButton
         );
 
+        // Rooms Grid
+        GridPane roomsGrid = new GridPane();
+        roomsGrid.setHgap(15);
+        roomsGrid.setVgap(15);
+        roomsGrid.setAlignment(Pos.CENTER);
+        roomsGrid.setPadding(new Insets(20));
+
+        // Booking Form
+        VBox bookingForm = new VBox(15);
+        bookingForm.setAlignment(Pos.CENTER);
+        bookingForm.setPadding(new Insets(20));
+        bookingForm.setStyle("-fx-background-color: #f9f9f9; -fx-border-radius: 10; -fx-background-radius: 10;");
+
         DatePicker startDatePicker = new DatePicker(LocalDate.now());
-        TextField daysField = new TextField();
-        daysField.setPromptText("Number of nights");
+        TextField nightsField = new TextField();
+        nightsField.setPromptText("Number of nights");
 
         Spinner<Integer> adultsSpinner = new Spinner<>(1, 10, 1);
         Spinner<Integer> childrenSpinner = new Spinner<>(0, 5, 0);
 
-        Label nightsLabel = new Label("Number of Nights");
-        Label adultsLabel = new Label("Adults");
-        Label childrenLabel = new Label("Children");
+        Button bookButton = new Button("Confirm Booking");
+        bookButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;");
 
+<<<<<<< HEAD
+        HBox formFields = new HBox(15);
+        formFields.setAlignment(Pos.CENTER);
+        formFields.getChildren().addAll(
+                createFormField("Check-in Date", startDatePicker),
+                createFormField("Nights", nightsField),
+                createFormField("Adults", adultsSpinner),
+                createFormField("Children", childrenSpinner)
+=======
         VBox nightsBox = new VBox(10, nightsLabel, daysField);
         nightsBox.setAlignment(Pos.CENTER);
         VBox adultsBox = new VBox(10, adultsLabel, adultsSpinner);
@@ -648,28 +641,153 @@ public class Main extends Application {
                 afterBookingBox
         );
 
+        bookingForm.getChildren().addAll(formFields, bookButton);
 
-        VBox root3 = new VBox(10);
-        root3.setPadding(new Insets(20));
-        root3.getChildren().addAll(root, root2);
+        // Add components to main container
+        mainContainer.getChildren().addAll(titleLabel, filterBox, roomsGrid, bookingForm);
 
-        confirmationMessage.setMaxWidth(Double.MAX_VALUE/2);
+        // Event Handlers
+        roomTypeFilter.setOnAction(e -> updateRoomsDisplay(roomsGrid, roomTypeFilter.getValue(), searchField.getText()));
+        searchField.textProperty().addListener((obs, oldVal, newVal) ->
+                updateRoomsDisplay(roomsGrid, roomTypeFilter.getValue(), newVal));
+        resetButton.setOnAction(e -> {
+            roomTypeFilter.setValue("All");
+            searchField.clear();
+        });
 
+        bookButton.setOnAction(e -> handleBooking(
+                customer, roomsGrid,
+                startDatePicker.getValue(),
+                nightsField.getText(),
+                adultsSpinner.getValue(),
+                childrenSpinner.getValue()
+        ));
 
+        // Initial rooms display
+        updateRoomsDisplay(roomsGrid, "All", "");
 
-
-        Scene scene = new Scene(root3, 1525, 750);
-        scene.getStylesheets().add("styles.css");
+        Scene scene = new Scene(mainContainer, 1525, 750);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         stage.setScene(scene);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        stage.setTitle("Room Booking - Hotel Ritz");
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root3);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-        fadeIn.play();
         stage.show();
     }
 
+    private VBox createFormField(String label, Control field) {
+        VBox container = new VBox(5);
+        Label fieldLabel = new Label(label);
+        fieldLabel.setStyle("-fx-font-weight: bold;");
+        container.getChildren().addAll(fieldLabel, field);
+        container.setAlignment(Pos.CENTER);
+        return container;
+    }
+
+    private void updateRoomsDisplay(GridPane grid, String filter, String searchText) {
+        grid.getChildren().clear();
+
+        int col = 0, row = 0;
+        for (Room room : hotel.getAllRooms()) {
+            if (matchesFilter(room, filter) && matchesSearch(room, searchText)) {
+                ToggleButton roomBtn = createRoomButton(room);
+                grid.add(roomBtn, col, row);
+
+                if (++col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+    }
+
+    private boolean matchesFilter(Room room, String filter) {
+        return filter.equals("All") ||
+                (filter.equals("Single") && room instanceof SingleRoom) ||
+                (filter.equals("Double") && room instanceof DoubleRoom) ||
+                (filter.equals("Triple") && room instanceof TripleRoom);
+    }
+
+    private boolean matchesSearch(Room room, String searchText) {
+        return String.valueOf(room.getRoomNumber()).contains(searchText);
+    }
+
+    private ToggleButton createRoomButton(Room room) {
+        ToggleButton btn = new ToggleButton();
+        btn.setMinSize(150, 120);
+        btn.setMaxSize(150, 120);
+
+        VBox content = new VBox(5);
+        content.setAlignment(Pos.CENTER);
+
+        Label number = new Label("Room " + room.getRoomNumber());
+        number.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
+
+        Label type = new Label(getRoomTypeName(room));
+        type.setStyle("-fx-font-size: 14;");
+
+        Label price = new Label("$" + room.getPricePerNight() + "/night");
+        price.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+
+        content.getChildren().addAll(number, type, price);
+        btn.setGraphic(content);
+
+        // Style by room type
+        String style = "-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-width: 2; ";
+        if (room instanceof SingleRoom) {
+            btn.setStyle(style + "-fx-background-color: #e3f2fd; -fx-border-color: #bbdefb;");
+        }
+        else if (room instanceof DoubleRoom) {
+            btn.setStyle(style + "-fx-background-color: #e8f5e9; -fx-border-color: #c8e6c9;");
+        }
+        else if (room instanceof TripleRoom) {
+            btn.setStyle(style + "-fx-background-color: #fff3e0; -fx-border-color: #ffe0b2;");
+        }
+
+        btn.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                btn.setStyle(btn.getStyle() + "-fx-border-color: #3498db;");
+            } else {
+                btn.setStyle(btn.getStyle().replace("-fx-border-color: #3498db;",
+                        room instanceof SingleRoom ? "-fx-border-color: #bbdefb;" :
+                                room instanceof DoubleRoom ? "-fx-border-color: #c8e6c9;" :
+                                        "-fx-border-color: #ffe0b2;"));
+            }
+        });
+
+        return btn;
+    }
+
+    private String getRoomTypeName(Room room) {
+        if (room instanceof SingleRoom) return "Single";
+        if (room instanceof DoubleRoom) return "Double";
+        if (room instanceof TripleRoom) return "Triple";
+        return "";
+    }
+
+    private void handleBooking(Customer customer, GridPane roomsGrid,
+                               LocalDate startDate, String nightsText,
+                               int adults, int children) {
+        try {
+            int nights = Integer.parseInt(nightsText);
+            if (nights <= 0) {
+                showAlert("Error", "Number of nights must be greater than zero");
+                return;
+            }
+
+            // Actual booking logic would go here
+            showAlert("Success", "Room booked successfully");
+            updateRoomsDisplay(roomsGrid, "All", "");
+
+        } catch (NumberFormatException e) {
+            showAlert("Error", "Please enter a valid number of nights");
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
 
     private void showAlert(String message) {
