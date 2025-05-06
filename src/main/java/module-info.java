@@ -6,4 +6,6 @@ module advanced.prog.advanced {
 
     opens advanced.prog.project to javafx.fxml;
     exports advanced.prog.project;
+    exports advanced.prog.project.models;
+    opens advanced.prog.project.models to javafx.fxml;
 }
