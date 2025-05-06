@@ -242,7 +242,6 @@ public class Main extends Application {
         Stage ratingStage = new Stage();;
         Rating rating = new Rating(customer);
         VBox root = new VBox(20);
-        root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER);
         Label titleLabel = new Label("Rate Your Experience");
         titleLabel.setStyle("-fx-font-size: 30px; -fx-text-fill: #4eb0e8;");
@@ -251,8 +250,8 @@ public class Main extends Application {
         ratingField.setPromptText("Enter your rating (1-5)");
         ratingField.setStyle("-fx-font-size: 14px; ");
         TextArea commentField = new TextArea();
-        commentField.setMaxWidth(300);
-        commentField.setMaxHeight(100);
+        commentField.setMaxWidth(400);
+        commentField.setMaxHeight(200);
         commentField.setPromptText("Enter your comment");
         commentField.setStyle("-fx-font-size: 14px;");
         Button submitButton = new Button("Submit Rating");
