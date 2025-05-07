@@ -3,14 +3,15 @@ package advanced.prog.project.models;
 public abstract class Room extends Hotel {
     int roomNumber;
     double pricePerNight;
+    String type;
     public boolean isAvailable = true;
     Customer customer;
 
-    public Room(int roomNumber, double pricePerNight, Customer customer) {
+    public Room(int roomNumber, double pricePerNight) {
         super();
         this.roomNumber = roomNumber;
         this.pricePerNight = pricePerNight;
-        this.customer = customer;
+        this.customer = null; // no customer initially
     }
 
 
@@ -46,7 +47,9 @@ public abstract class Room extends Hotel {
     }
 
 
-
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
 }
 
 
