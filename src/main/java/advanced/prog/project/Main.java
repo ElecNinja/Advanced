@@ -440,11 +440,12 @@ public class Main extends Application {
                         return;
                     }
 
+
                     checkRs.close();
                     checkStmt.close();
 
                     // Insert new user
-                    String query = "INSERT INTO users (username, password) VALUES (?, ?, ?)";
+                    String query = "INSERT INTO users (username, password, checked) VALUES (?, ?, ?)";
                     PreparedStatement stmt = conn.prepareStatement(query);
                     stmt.setString(1, name1);
                     stmt.setString(2, password1);
