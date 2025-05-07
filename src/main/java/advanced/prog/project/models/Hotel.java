@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static advanced.prog.project.DBOperations.getAllRoomsFromDB;
+import static advanced.prog.project.DBOperations.isAvailableRoom;
+
 public class Hotel {
     private String name;
 
 
-    protected List<Room> rooms = new ArrayList<>();
+    protected static List<Room> rooms = new ArrayList<>();
     protected List<Booking> bookings = new ArrayList<>();
     protected List<Rating> ratings = new ArrayList<>();
     public Hotel() {
@@ -27,7 +30,7 @@ public class Hotel {
 
 
 
-    public void addRoom(Room room) {
+    public static void addRoom(Room room) {
         rooms.add(room);
     }
 
@@ -40,12 +43,36 @@ public class Hotel {
         }
         return available;
     }
-    public List<Room> getAllRooms() {
-        return new ArrayList<>(rooms); // assuming 'rooms' is your internal List<Room>
+//    public List<Room> getAllRooms() {
+//        return new ArrayList<>(rooms);
+//    }
+
+    public static List<Room> getAllRooms() {
+        return rooms;
     }
+
     public void removeRoom(int roomNumber) {
         rooms.removeIf(room -> room.getRoomNumber() == roomNumber);
     }
+    public static void loadRoomsFromDB() {
+        rooms = getAllRoomsFromDB(); // assuming you import the static method or move it into Hotel
+    }
+
+    // sync room availability from DB
+//    public static void syncRoomAvailability() {
+//        for (Room room : rooms) {
+//            boolean available = isAvailableRoom(room.getRoomNumber());
+//            room.isAvailable = available;
+//        }
+//    }
+    public static void syncRoomAvailability() {
+        for (Room room : rooms) {
+            boolean available = isAvailableRoom(room.getRoomNumber());
+            room.setAvailable(available);
+        }
+    }
+
+
     public Booking bookRoom(Customer customer, Room room, LocalDate startDate, int nights, double totalCost) {
         for (Room rm : rooms) {
             if (rm.getRoomNumber() == room.getRoomNumber() && room.isAvailable) {

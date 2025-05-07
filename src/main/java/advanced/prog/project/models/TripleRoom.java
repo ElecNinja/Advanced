@@ -1,8 +1,8 @@
 package advanced.prog.project.models;
 
 public class TripleRoom extends Room {
-    public TripleRoom(int roomNumber, double pricePerNight, Customer customer) {
-        super(roomNumber, pricePerNight, customer);
+    public TripleRoom(int roomNumber, double pricePerNight) {
+        super(roomNumber, pricePerNight);
     }
 
     @Override

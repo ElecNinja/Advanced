@@ -251,4 +251,15 @@
     -fx-background-color: #1e90ff;
     -fx-effect: dropshadow(gaussian, #1e90ff , 3, 0.01, 0, 0) !important;
 }
+.rating-box {
+    -fx-background-color: #2a2a40;
+    -fx-border-color: #1e90ff;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10px;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Rounded MT Bold";
+    -fx-effect: dropshadow(gaussian, #1e90ff , 5, 0.3, 0, 0);
+}
 
