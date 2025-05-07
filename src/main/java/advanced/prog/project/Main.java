@@ -440,6 +440,7 @@ public class Main extends Application {
                         return;
                     }
 
+
                     checkRs.close();
                     checkStmt.close();
 
