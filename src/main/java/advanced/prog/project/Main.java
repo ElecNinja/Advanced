@@ -126,7 +126,6 @@ public class Main extends Application {
                 noReviewsLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #4eb0e8;");
                 root.getChildren().add(noReviewsLabel);
             }
-            System.out.println("test before");
             while (rs.next()) {
                 int userId = rs.getInt("user_id");
                 String Username = DBOperations.getUsernameID(userId); // Assuming this method fetches the username based on userId
@@ -151,12 +150,9 @@ public class Main extends Application {
                 ratingBox.getChildren().addAll(reviewCard, commentLabel);
                 ratingBox.setAlignment(Pos.CENTER_LEFT);
                 ratingBox.setPadding(new Insets(10));
-//                ratingBox.setStyle("-fx-background-color: #2a2a40; -fx-border-color: #2a2a30; -fx-border-radius: 8px;");
                 ratingBox.getStyleClass().add("rating-box");
-
                 root.getChildren().add(ratingBox);
             }
-            System.out.println("test after");
         } catch (SQLException e) {
             showAlert("Database error.");
         }
