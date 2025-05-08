@@ -204,7 +204,6 @@ public class Main extends Application {
         Button loginButton = new Button("Login");
         loginButton.setMaxWidth(150);
         loginButton.setStyle(" -fx-text-fill: white; -fx-font-size: 16px;");
-        loginButton.setDisable(true);
 
         loginButton.setOnAction(e -> {
             String name = nameField.getText().trim();
@@ -247,12 +246,8 @@ public class Main extends Application {
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
 
-        // Enable only when both fields have values
-        ChangeListener<String> listener = (obs, oldVal, newVal) -> {
-            loginButton.setDisable(nameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty());
-        };
-        nameField.textProperty().addListener(listener);
-        passwordField.textProperty().addListener(listener);
+
+
 
         root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, passwordField, loginButton, backButton);
 
