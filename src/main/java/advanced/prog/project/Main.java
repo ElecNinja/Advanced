@@ -41,6 +41,7 @@ public class Main extends Application {
 //        DBOperations.addRoom(singleroom);
 //        DBOperations.updateRoom(103,200.0, 1);
 
+
         Hotel.loadRoomsFromDB();
         this.stage = stage;
     showWelcomeScreen();
