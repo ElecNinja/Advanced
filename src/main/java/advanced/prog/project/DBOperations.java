@@ -106,7 +106,7 @@ public class DBOperations {
 
     }
 
-    public static void updateRoom(int roomNumber, double price) {
+    public static void updateRoom(int roomNumber, double price, int available) {
         Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
         if (conn != null) {
             try {
@@ -128,12 +128,12 @@ public class DBOperations {
                 checkStmt.close();
 
                 // Insert new user
-                String query = "UPDATE rooms SET price = ? WHERE room_id = ?";
+                String query = "UPDATE rooms SET price = ?, available = ? WHERE room_id = ?";
                 PreparedStatement stmt = conn.prepareStatement(query);
                 stmt.setDouble(1, price);
-                stmt.setInt(2, roomNumber);
+                stmt.setInt(2, available);
+                stmt.setInt(3, roomNumber);
                 int rowsInserted = stmt.executeUpdate();
-
                 if (rowsInserted > 0) {
                     showAlert("Room updated successfully.");
                 } else {

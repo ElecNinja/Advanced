@@ -33,9 +33,15 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
-        Hotel.loadRoomsFromDB();
+
 //        DoubleRoom doubleroom = new DoubleRoom(103, 200.0);
 //        DBOperations.addRoom(doubleroom);
+//        DBOperations.removeRoom(101);
+//        DoubleRoom singleroom = new DoubleRoom(101, 200.0);
+//        DBOperations.addRoom(singleroom);
+//        DBOperations.updateRoom(103,200.0, 1);
+
+        Hotel.loadRoomsFromDB();
         this.stage = stage;
     showWelcomeScreen();
     }
