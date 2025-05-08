@@ -30,6 +30,7 @@ import static advanced.prog.project.models.Hotel.syncRoomAvailability;
 public class Main extends Application {
     private Stage stage;
     private Hotel hotel;
+    Scene scene;
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
@@ -52,6 +53,7 @@ public class Main extends Application {
 
 
     private void showWelcomeScreen() {
+ // Making the welcome screen
         VBox vb = new VBox(30);
         vb.getStyleClass().add("v-box");
         vb.setPadding(new Insets(30));
@@ -71,9 +73,7 @@ public class Main extends Application {
 
         registerButton.getStyleClass().add("button");
 
-        loginButton.setOnAction(e -> showLoginScreen());
-        registerButton.setOnAction(e -> showCustomerInfoPage());
-        ReviewsButton.setOnAction(e -> showReviewsPage());
+
 
         vb.getChildren().addAll(welcomeLabel, loginButton, registerButton, ReviewsButton);
 
@@ -85,10 +85,15 @@ public class Main extends Application {
         bgImageView.setFitHeight(1200);
         bgImageView.setPreserveRatio(false);
 
+
+        // Creatng the scene for the welcome screen
         root.getChildren().addAll(bgImageView,  vb);
-        Scene s3 = new Scene(root , 1525 , 750);
-        stage.setScene(s3);
-        s3.getStylesheets().add("styles.css");
+        scene = new Scene(root , 1525 , 750);
+        loginButton.setOnAction(e -> showLoginScreen());
+        registerButton.setOnAction(e -> showCustomerInfoPage());
+        ReviewsButton.setOnAction(e -> showReviewsPage(scene));
+        stage.setScene(scene);
+        scene.getStylesheets().add("styles.css");
         stage.setTitle("Home Page");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
@@ -98,7 +103,8 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void showReviewsPage() {
+    private void showReviewsPage(Scene scene) {
+        // Making the reviews page
         VBox root = new VBox(20);
         root.setPadding(new Insets(20));
         root.setAlignment(Pos.CENTER);
@@ -123,7 +129,6 @@ public class Main extends Application {
                 noReviewsLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #4eb0e8;");
                 root.getChildren().add(noReviewsLabel);
             }
-            System.out.println("test before");
             while (rs.next()) {
                 int userId = rs.getInt("user_id");
                 String Username = DBOperations.getUsernameID(userId); // Assuming this method fetches the username based on userId
@@ -148,12 +153,9 @@ public class Main extends Application {
                 ratingBox.getChildren().addAll(reviewCard, commentLabel);
                 ratingBox.setAlignment(Pos.CENTER_LEFT);
                 ratingBox.setPadding(new Insets(10));
-//                ratingBox.setStyle("-fx-background-color: #2a2a40; -fx-border-color: #2a2a30; -fx-border-radius: 8px;");
                 ratingBox.getStyleClass().add("rating-box");
-
                 root.getChildren().add(ratingBox);
             }
-            System.out.println("test after");
         } catch (SQLException e) {
             showAlert("Database error.");
         }
@@ -164,7 +166,8 @@ public class Main extends Application {
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
         root.getChildren().add(backButton);
-        Scene scene = new Scene(root, 1525, 750);
+        // Making the scene for the reviews page
+        scene = new Scene(root , 1525 , 750);
         scene.getStylesheets().add("styles.css");
         stage.setTitle("Customer Reviews");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
@@ -256,11 +259,11 @@ public class Main extends Application {
 
         root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, passwordField, loginButton, backButton);
 
-        Scene s3 = new Scene(root, 1525, 750);
-        s3.getStylesheets().add("styles.css");
+        scene = new Scene(root, 1525, 750);
+        scene.getStylesheets().add("styles.css");
         stage.setTitle("Home Page");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
-        stage.setScene(s3);
+        stage.setScene(scene);
         stage.setTitle("Login - Hotel Ritz");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
         fadeIn.setFromValue(0.0);
@@ -318,7 +321,7 @@ public class Main extends Application {
         VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
-        Scene scene = new Scene(dashboard, 1525, 750);
+        scene = new Scene(dashboard, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
@@ -376,7 +379,7 @@ public class Main extends Application {
         ratingStage.setTitle("Rate Your Experience");
         ratingStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         root.getChildren().addAll(titleLabel, ratingField, commentField, submitButton);
-        Scene scene = new Scene(root, 500, 500);
+        scene = new Scene(root, 500, 500);
         scene.getStylesheets().add("styles.css");
         ratingStage.setScene(scene);
         ratingStage.show();
@@ -486,7 +489,7 @@ public class Main extends Application {
         form.setMaxWidth(400);
         VBox.setMargin(nextButton, new Insets(10, 20, 10, 20));
 
-        Scene scene = new Scene(form, 1525, 750);
+        scene = new Scene(form, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Customer Info");
@@ -729,7 +732,7 @@ public class Main extends Application {
 
 
 
-        Scene scene = new Scene(root3, 1525, 750);
+        scene = new Scene(root3, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
