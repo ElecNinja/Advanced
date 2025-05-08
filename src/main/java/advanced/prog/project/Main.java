@@ -56,19 +56,14 @@ public class Main extends Application {
         vb.getStyleClass().add("v-box");
         vb.setPadding(new Insets(30));
         vb.setAlignment(Pos.CENTER);
-
+        //design for the interface of the home screen
         Label welcomeLabel = new Label("Welcome to the Hotel Ritz!");
         welcomeLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
-
         Button loginButton = new Button("Login");
-
         loginButton.getStyleClass().add("button");
         Button registerButton = new Button("New Here? Register with us");
 
         Button ReviewsButton = new Button("Reviews");
-
-
-
         registerButton.getStyleClass().add("button");
 
         loginButton.setOnAction(e -> showLoginScreen());
@@ -76,7 +71,7 @@ public class Main extends Application {
         ReviewsButton.setOnAction(e -> showReviewsPage());
 
         vb.getChildren().addAll(welcomeLabel, loginButton, registerButton, ReviewsButton);
-
+        // putting  the image of the home page
         StackPane root = new StackPane();
         ImageView bgImageView = new ImageView(
                 new Image(Objects.requireNonNull(getClass().getResourceAsStream("/ritz.jpg")))
@@ -84,7 +79,7 @@ public class Main extends Application {
         bgImageView.setFitWidth(2500);
         bgImageView.setFitHeight(1200);
         bgImageView.setPreserveRatio(false);
-
+// making the scene for the homepage
         root.getChildren().addAll(bgImageView,  vb);
         Scene s3 = new Scene(root , 1525 , 750);
         stage.setScene(s3);
@@ -97,7 +92,7 @@ public class Main extends Application {
         fadeIn.play();
         stage.show();
     }
-
+// making the reviews
     private void showReviewsPage() {
         VBox root = new VBox(20);
         root.setPadding(new Insets(20));
@@ -148,7 +143,6 @@ public class Main extends Application {
                 ratingBox.getChildren().addAll(reviewCard, commentLabel);
                 ratingBox.setAlignment(Pos.CENTER_LEFT);
                 ratingBox.setPadding(new Insets(10));
-//                ratingBox.setStyle("-fx-background-color: #2a2a40; -fx-border-color: #2a2a30; -fx-border-radius: 8px;");
                 ratingBox.getStyleClass().add("rating-box");
 
                 root.getChildren().add(ratingBox);
