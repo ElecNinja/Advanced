@@ -31,6 +31,8 @@ public class Main extends Application {
     private Stage stage;
     private Hotel hotel;
     Scene scene;
+
+
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
@@ -233,7 +235,7 @@ public class Main extends Application {
                     ResultSet rs = stmt.executeQuery();
 
                     if (rs.next()) {
-                        showCustomerDashboard(new Customer(name, password));
+                        showCustomerDashboard(new Customer(name, password), rs.getInt("user_id"));
                     } else {
                         showAlert("Invalid username or password.");
                     }
@@ -273,7 +275,7 @@ public class Main extends Application {
 
 
 
-    private void showCustomerDashboard(Customer customer) {
+    private void showCustomerDashboard(Customer customer, int userID) {
         boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
@@ -292,7 +294,7 @@ public class Main extends Application {
         checkInBtn.setOnAction(e -> {
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
-            showBookingPage(customer);
+            showBookingPage(customer, userID);
         });
 
         // Check-Out Logic
@@ -450,21 +452,43 @@ public class Main extends Application {
                     int rowsInserted = stmt.executeUpdate();
 
                     if (rowsInserted > 0) {
-                        showCustomerDashboard(currentCustomer);
+                        // Get user_id after insert
+                        String getIdQuery = "SELECT user_id FROM users WHERE username = ?";
+                        PreparedStatement getIdStmt = conn.prepareStatement(getIdQuery);
+                        getIdStmt.setString(1, name1);
+                        ResultSet idRs = getIdStmt.executeQuery();
+
+                        int userId = -1;
+                        if (idRs.next()) {
+                            userId = idRs.getInt("user_id");
+                        }
+
+                        idRs.close();
+                        getIdStmt.close();
+
+                        if (userId != -1) {
+                            // Use this userId when booking
+                            showCustomerDashboard(currentCustomer, userId); // Pass the ID forward!
+                            syncRoomAvailability();
+                        }
+                    if (rowsInserted > 0) {
+                        showCustomerDashboard(currentCustomer, userId);
+                        syncRoomAvailability();
                     } else {
                         showAlert("Failed to register user.");
                     }
 
                     stmt.close();
                     conn.close();
-                } catch (SQLException ex) {
+                }
+            } catch (SQLException ex) {
                     ex.printStackTrace();
                     showAlert("Database error.");
                 }
-            } else {
-                showAlert("Database connection failed.");}
 
-        });
+        }
+
+                });
 
 
         Button backButton = new Button("← Back");
@@ -488,7 +512,7 @@ public class Main extends Application {
         stage.show();
     }
 
-    private void showBookingPage(Customer customer) {
+    private void showBookingPage(Customer customer, int userID) {
         VBox root = new VBox(10);
         root.setPadding(new Insets(20));
 
@@ -613,7 +637,7 @@ public class Main extends Application {
                 selectedRoom.isAvailable = false;
                 selectedRoom.setCustomer(customer);
                 customer.setChecked(true);
-                DBOperations.bookRoom(DBOperations.getIdUsername(customer.getUsername()), selectedRoom.getRoomNumber(), start, days,selectedRoom.getPricePerNight() * days);
+                DBOperations.bookRoom(userID, selectedRoom.getRoomNumber(), start, days,selectedRoom.getPricePerNight() * days);
 
                 if (booking != null) {
                     confirmationMessage.setText("");
@@ -669,10 +693,7 @@ public class Main extends Application {
                     confirmationBox.setAlignment(Pos.CENTER);
                     confirmationMessage.setGraphic(confirmationTextFlow);
 
-//                    Button goToDashboardButton = new Button("Go to Dashboard");
-//                    goToDashboardButton.setOnAction(ev -> {
-//                        showCustomerDashboard(customer);
-//                    });
+
                     VBox vAfterBookingBox = new VBox(10);
                     vAfterBookingBox.setAlignment(Pos.CENTER);
                     afterBookingBox.getChildren().clear();
@@ -689,7 +710,7 @@ public class Main extends Application {
 
         Button goToDashboardButton = new Button("Go to Dashboard");
         goToDashboardButton.setOnAction(ev -> {
-            showCustomerDashboard(customer);
+            showCustomerDashboard(customer, userID);
         });
         VBox.setVgrow(confirmationMessage, Priority.ALWAYS);
         root2.getChildren().addAll(
