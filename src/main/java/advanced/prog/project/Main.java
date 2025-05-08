@@ -91,7 +91,7 @@ public class Main extends Application {
         bgImageView.setPreserveRatio(false);
 
 
-        // Creatng the scene for the welcome screen
+        // Creating the scene for the welcome screen
         root.getChildren().addAll(bgImageView,  vb);
         scene = new Scene(root , 1525 , 750);
         loginButton.setOnAction(e -> showLoginScreen());
@@ -669,13 +669,13 @@ public class Main extends Application {
                     confirmationBox.setAlignment(Pos.CENTER);
                     confirmationMessage.setGraphic(confirmationTextFlow);
 
-                    Button goToDashboardButton = new Button("Go to Dashboard");
-                    goToDashboardButton.setOnAction(ev -> {
-                        showCustomerDashboard(customer);
-                    });
-                    VBox vAfterBookingBox = new VBox(10, goToDashboardButton);
+//                    Button goToDashboardButton = new Button("Go to Dashboard");
+//                    goToDashboardButton.setOnAction(ev -> {
+//                        showCustomerDashboard(customer);
+//                    });
+                    VBox vAfterBookingBox = new VBox(10);
                     vAfterBookingBox.setAlignment(Pos.CENTER);
-//                    afterBookingBox.getChildren().clear();
+                    afterBookingBox.getChildren().clear();
                     afterBookingBox.getChildren().add(vAfterBookingBox);
 
                     updateGrid.run();
@@ -686,12 +686,18 @@ public class Main extends Application {
             }
         });
 
+
+        Button goToDashboardButton = new Button("Go to Dashboard");
+        goToDashboardButton.setOnAction(ev -> {
+            showCustomerDashboard(customer);
+        });
         VBox.setVgrow(confirmationMessage, Priority.ALWAYS);
         root2.getChildren().addAll(
                 new Label("Booking Information"),
                 new Label("Check-in Date:"), startDatePicker,
                 afterBookingBox,
-                confirmationMessage
+                confirmationMessage,
+                goToDashboardButton
         );
 
 
