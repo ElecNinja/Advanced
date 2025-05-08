@@ -34,13 +34,18 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
+//
+//        DBOperations.addRoom(new SingleRoom(116, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(117, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(118, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(119, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(120, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(121, 3000.0));
 
-//        DoubleRoom doubleroom = new DoubleRoom(103, 200.0);
-//        DBOperations.addRoom(doubleroom);
-//        DBOperations.removeRoom(101);
-//        DoubleRoom singleroom = new DoubleRoom(101, 200.0);
-//        DBOperations.addRoom(singleroom);
-//        DBOperations.updateRoom(103,200.0, 1);
+
+//        DBOperations.updateRoom(101,1000, 1);
+
+
 
 
         Hotel.loadRoomsFromDB();
@@ -272,7 +277,6 @@ public class Main extends Application {
         boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
-        Button bookingSummaryBtn = new Button("Booking Summary");
         Button backButton = new Button("← Back");
         backButton.setOnAction(e -> showLoginScreen());
         backButton.setMaxWidth(100);
@@ -300,20 +304,8 @@ public class Main extends Application {
             checkOutBtn.setDisable(true);
         });
 
-        // Booking Summary
-        bookingSummaryBtn.setOnAction(e -> {
-            if (customer.isChecked()) {
-                System.out.println("Booking Summary: (Dummy Data)");
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("No Booking Found");
-                alert.setHeaderText("You haven't checked in yet.");
-                alert.setContentText("Please check in to view your booking summary.");
-                alert.showAndWait();
-            }
-        });
 
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn, backButton);
+        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         scene = new Scene(dashboard, 1525, 750);
@@ -506,7 +498,7 @@ public class Main extends Application {
 
 
         ComboBox<String> filterBox = new ComboBox<>();
-        filterBox.getItems().addAll("All", "Single", "Double", "Triple", "Suite");
+        filterBox.getItems().addAll("All", "Single", "Double", "Triple");
         filterBox.setValue("All");
 
         TextField searchField = new TextField();
@@ -516,6 +508,7 @@ public class Main extends Application {
         roomGrid.setHgap(10);
         roomGrid.setVgap(10);
         roomGrid.setPadding(new Insets(10));
+        roomGrid.setAlignment(Pos.CENTER);
 
         ToggleGroup roomToggleGroup = new ToggleGroup();
 
@@ -550,7 +543,7 @@ public class Main extends Application {
                 roomBtn.setDisable(!room.isAvailable);
                 Tooltip.install(roomBtn, new Tooltip("Price: $" + room.getPricePerNight()));
                 roomGrid.add(roomBtn, col++, row);
-                if (col == 8) {
+                if (col == 12) {
                     col = 0;
                     row++;
                 }
@@ -604,7 +597,6 @@ public class Main extends Application {
                 confirmationMessage.setAlignment(Pos.CENTER);
                 return;
             }
-
             try {
                 Room selectedRoom = (Room) selectedToggle.getUserData();
                 int roomNumber = selectedRoom.getRoomNumber();
@@ -622,84 +614,68 @@ public class Main extends Application {
                 selectedRoom.setCustomer(customer);
                 customer.setChecked(true);
                 DBOperations.bookRoom(DBOperations.getIdUsername(customer.getUsername()), selectedRoom.getRoomNumber(), start, days,selectedRoom.getPricePerNight() * days);
-        //        changeCheckInStatus(customer.getUsername(), true); // DB Code
+
                 if (booking != null) {
                     confirmationMessage.setText("");
                     double totalCost = selectedRoom.getPricePerNight() * days;
                     LocalDate checkoutDate = start.plusDays(days);
-
                     // Color code the confirmation message
                     TextFlow confirmationTextFlow = new TextFlow();
                     confirmationTextFlow.setTextAlignment(TextAlignment.CENTER);
                     confirmationTextFlow.setStyle("-fx-font-size: 14px;");
-
                     Text bookingText = new Text("✅ Booked ");
                     bookingText.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(bookingText);
-
                     Text roomText = new Text(" Room " + roomNumber);
                     roomText.setStyle("-fx-fill: #6fcf97;");
                     confirmationTextFlow.getChildren().add(roomText);
-
                     Text successText = new Text(" successfully for ");
                     successText.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(successText);
-
                     Text nightsText = new Text(days + " night(s)");
                     nightsText.setStyle("-fx-fill: gold;");
                     confirmationTextFlow.getChildren().add(nightsText);
-
                     Text preTotalText = new Text("\n💰 Total Cost:");
                     preTotalText.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(preTotalText);
-
                     Text totalCostText = new Text(" $" + totalCost);
                     totalCostText.setStyle("-fx-fill: #6fcf97;");
                     confirmationTextFlow.getChildren().add(totalCostText);
-
                     Text adultsTextLabel = new Text("\n👤 Adults: ");
                     adultsTextLabel.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(adultsTextLabel);
                     Text adultsText = new Text(" " + adultsSpinner.getValue());
                     adultsText.setStyle("-fx-fill: #2d36db;");
                     confirmationTextFlow.getChildren().add(adultsText);
-
                     Text childrenTextLabel = new Text("\n👶 Children: ");
                     childrenTextLabel.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(childrenTextLabel);
                     Text childrenText = new Text(" " + childrenSpinner.getValue());
                     childrenText.setStyle("-fx-fill: #2d36db;");
                     confirmationTextFlow.getChildren().add(childrenText);
-
                     Text startText = new Text("\n📅 Start Date: ");
                     startText.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(startText);
-
                     Text startDateText = new Text(" " + start);
                     startDateText.setStyle("-fx-fill: #2d9cdb;");
                     confirmationTextFlow.getChildren().add(startDateText);
-
                     Text checkoutText = new Text("\n📅 Checkout Date: ");
                     checkoutText.setStyle("-fx-fill: white;");
                     confirmationTextFlow.getChildren().add(checkoutText);
-
                     Text checkoutDateText = new Text(" " + checkoutDate);
                     checkoutDateText.setStyle("-fx-fill: gold;");
                     confirmationTextFlow.getChildren().add(checkoutDateText);
-
                     VBox confirmationBox = new VBox(10, confirmationTextFlow);
                     confirmationBox.setAlignment(Pos.CENTER);
-
-
                     confirmationMessage.setGraphic(confirmationTextFlow);
 
                     Button goToDashboardButton = new Button("Go to Dashboard");
                     goToDashboardButton.setOnAction(ev -> {
                         showCustomerDashboard(customer);
                     });
-                    VBox vAfterBookingBox = new VBox(10, confirmationMessage, goToDashboardButton);
+                    VBox vAfterBookingBox = new VBox(10, goToDashboardButton);
                     vAfterBookingBox.setAlignment(Pos.CENTER);
-                    afterBookingBox.getChildren().clear();
+//                    afterBookingBox.getChildren().clear();
                     afterBookingBox.getChildren().add(vAfterBookingBox);
 
                     updateGrid.run();
@@ -714,7 +690,8 @@ public class Main extends Application {
         root2.getChildren().addAll(
                 new Label("Booking Information"),
                 new Label("Check-in Date:"), startDatePicker,
-                afterBookingBox
+                afterBookingBox,
+                confirmationMessage
         );
 
 
@@ -738,6 +715,9 @@ public class Main extends Application {
         fadeIn.play();
         stage.show();
     }
+
+
+
 
 
 
