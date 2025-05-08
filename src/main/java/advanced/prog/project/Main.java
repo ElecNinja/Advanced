@@ -81,8 +81,8 @@ public class Main extends Application {
         ImageView bgImageView = new ImageView(
                 new Image(Objects.requireNonNull(getClass().getResourceAsStream("/ritz.jpg")))
         );
-        bgImageView.setFitWidth(1700);
-        bgImageView.setFitHeight(875);
+        bgImageView.setFitWidth(2000);
+        bgImageView.setFitHeight(850);
         bgImageView.setPreserveRatio(false);
 
         root.getChildren().addAll(bgImageView,  vb);
