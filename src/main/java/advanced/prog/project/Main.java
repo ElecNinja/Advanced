@@ -540,7 +540,7 @@ private void showBookingPage(Customer customer, int userID) {
             ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
             roomBtn.setMinSize(100, 60);
             roomBtn.setUserData(room);
-//            roomBtn.setToggleGroup(roomToggleGroup);
+            roomBtn.setToggleGroup(roomToggleGroup);
 
             roomBtn.setOnAction(ev -> {
                 for (Toggle toggle : roomToggleGroup.getToggles()) {
