@@ -228,7 +228,7 @@ public class Main extends Application {
                     ResultSet rs = stmt.executeQuery();
 
                     if (rs.next()) {
-                        showCustomerDashboard(new Customer(name, password));
+                        showCustomerDashboard(new Customer(name, password), rs.getInt("user_id"));
                     } else {
                         showAlert("Invalid username or password.");
                     }
@@ -267,7 +267,7 @@ public class Main extends Application {
 
 
 
-    private void showCustomerDashboard(Customer customer) {
+    private void showCustomerDashboard(Customer customer, int userID) {
         boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
@@ -290,7 +290,7 @@ public class Main extends Application {
         checkInBtn.setOnAction(e -> {
             checkInBtn.setDisable(true);
             checkOutBtn.setDisable(false);
-            showBookingPage(customer);
+            showBookingPage(customer, userID);
         });
 
         // Check-Out Logic
@@ -448,7 +448,7 @@ public class Main extends Application {
                     int rowsInserted = stmt.executeUpdate();
 
                     if (rowsInserted > 0) {
-                        showCustomerDashboard(currentCustomer);
+                        showCustomerDashboard(currentCustomer, DBOperations.getIdUsername(name1));
                     } else {
                         showAlert("Failed to register user.");
                     }
@@ -484,7 +484,7 @@ public class Main extends Application {
         fadeIn.play();
     }
 
-private void showBookingPage(Customer customer) {
+private void showBookingPage(Customer customer, int userID) {
     VBox root = new VBox(10);
     root.setPadding(new Insets(20));
 
@@ -540,7 +540,7 @@ private void showBookingPage(Customer customer) {
             ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
             roomBtn.setMinSize(100, 60);
             roomBtn.setUserData(room);
-            roomBtn.setToggleGroup(roomToggleGroup);
+//            roomBtn.setToggleGroup(roomToggleGroup);
 
             roomBtn.setOnAction(ev -> {
                 for (Toggle toggle : roomToggleGroup.getToggles()) {
@@ -603,7 +603,7 @@ private void showBookingPage(Customer customer) {
     Label confirmationMessage = new Label();
 
     Button goToDashboardButton = new Button("Go to Dashboard");
-    goToDashboardButton.setOnAction(ev -> showCustomerDashboard(customer));
+    goToDashboardButton.setOnAction(ev -> showCustomerDashboard(customer, userID));
     bookButton.setOnAction(e -> {
         Toggle selectedToggle = roomToggleGroup.getSelectedToggle();
         if (selectedToggle == null) {
@@ -629,7 +629,7 @@ private void showBookingPage(Customer customer) {
             selectedRoom.isAvailable = false;
             selectedRoom.setCustomer(customer);
             customer.setChecked(true);
-            DBOperations.bookRoom(DBOperations.getIdUsername(customer.getUsername()), selectedRoom.getRoomNumber(), start, days, selectedRoom.getPricePerNight() * days);
+            DBOperations.bookRoom(userID, selectedRoom.getRoomNumber(), start, days, selectedRoom.getPricePerNight() * days);
 
             if (booking != null) {
                 confirmationMessage.setText("");
