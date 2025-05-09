@@ -471,13 +471,6 @@ public class Main extends Application {
                             showCustomerDashboard(currentCustomer, userId); // Pass the ID forward!
                             syncRoomAvailability();
                         }
-                    if (rowsInserted > 0) {
-                        showCustomerDashboard(currentCustomer, userId);
-                        syncRoomAvailability();
-                    } else {
-                        showAlert("Failed to register user.");
-                    }
-
                     stmt.close();
                     conn.close();
                 }
