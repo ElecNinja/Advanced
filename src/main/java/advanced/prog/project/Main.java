@@ -498,7 +498,236 @@ public class Main extends Application {
         stage.show();
     }
 
-
+//    private void showBookingPage(Customer customer) {
+//        VBox root = new VBox(10);
+//        root.setPadding(new Insets(20));
+//
+//        VBox root2 = new VBox(10);
+//        root2.setPadding(new Insets(20));
+//        root2.setAlignment(Pos.CENTER);
+//
+//
+//        ComboBox<String> filterBox = new ComboBox<>();
+//        filterBox.getItems().addAll("All", "Single", "Double", "Triple", "Suite");
+//        filterBox.setValue("All");
+//
+//        TextField searchField = new TextField();
+//        searchField.setPromptText("Search by room number or bed type...");
+//
+//        GridPane roomGrid = new GridPane();
+//        roomGrid.setHgap(10);
+//        roomGrid.setVgap(10);
+//        roomGrid.setPadding(new Insets(10));
+//
+//        ToggleGroup roomToggleGroup = new ToggleGroup();
+//
+//        Runnable updateGrid = () -> {
+//            roomGrid.getChildren().clear(); // Clear previous grid content
+//
+//            String filter = filterBox.getValue();
+//            String searchText = searchField.getText().toLowerCase();
+//            int col = 0, row = 0;
+//
+//            for (Room room : hotel.getAllRooms()) {
+//                // Filter by Room Type and Search Text
+//                boolean matchesFilter = filter.equals("All") || room.getClass().getSimpleName().startsWith(filter);
+//                boolean matchesSearch = String.valueOf(room.getRoomNumber()).contains(searchText);
+//
+//                if (!matchesFilter || !matchesSearch) continue;
+//                ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
+//                roomBtn.setMinSize(100, 60);
+//                roomBtn.setUserData(room);
+//
+//                roomBtn.setToggleGroup(roomToggleGroup);
+//
+//                roomBtn.setOnAction(ev -> {
+//                    for (Toggle toggle : roomToggleGroup.getToggles()) {
+//                        Room r = (Room) toggle.getUserData();
+//                        ((ToggleButton) toggle).setStyle(r.isAvailable ?
+//                                "-fx-background-color: #6fcf97;" : "-fx-background-color: #eb5757;");
+//                    }
+//                    roomBtn.setStyle("-fx-background-color: #2d9cdb; -fx-text-fill: white;");
+//                });
+//                roomBtn.setStyle(room.isAvailable ? "-fx-background-color: #6fcf97;" : "-fx-background-color: #eb5757;");
+//                roomBtn.setDisable(!room.isAvailable);
+//                Tooltip.install(roomBtn, new Tooltip("Price: $" + room.getPricePerNight()));
+//                roomGrid.add(roomBtn, col++, row);
+//                if (col == 8) {
+//                    col = 0;
+//                    row++;
+//                }
+//            }
+//        };
+//        syncRoomAvailability();
+//        updateGrid.run();
+//
+//        filterBox.setOnAction(e -> updateGrid.run());
+//        searchField.setOnKeyReleased(e -> updateGrid.run());
+//
+//        root.getChildren().addAll(
+//                new Label("Filter by Room Type:"), filterBox,
+//                new Label("Search:"), searchField,
+//                roomGrid
+//        );
+//
+//        DatePicker startDatePicker = new DatePicker(LocalDate.now());
+//        TextField daysField = new TextField();
+//        daysField.setPromptText("Number of nights");
+//
+//        Spinner<Integer> adultsSpinner = new Spinner<>(1, 10, 1);
+//        Spinner<Integer> childrenSpinner = new Spinner<>(0, 5, 0);
+//
+//        Label nightsLabel = new Label("Number of Nights");
+//        Label adultsLabel = new Label("Adults");
+//        Label childrenLabel = new Label("Children");
+//
+//        VBox nightsBox = new VBox(10, nightsLabel, daysField);
+//        nightsBox.setAlignment(Pos.CENTER);
+//        VBox adultsBox = new VBox(10, adultsLabel, adultsSpinner);
+//        adultsBox.setAlignment(Pos.CENTER);
+//        VBox childrenBox = new VBox(10, childrenLabel, childrenSpinner);
+//        childrenBox.setAlignment(Pos.CENTER);
+//
+//        Button bookButton = new Button("Book Room");
+//        HBox bookingBoxContainer = new HBox(10, nightsBox, adultsBox, childrenBox);
+//        VBox afterBookingBox = new VBox(10, bookingBoxContainer, bookButton);
+//        bookingBoxContainer.setPadding(new Insets(20));
+//        afterBookingBox.setAlignment(Pos.CENTER);
+//        bookingBoxContainer.setAlignment(Pos.CENTER);
+//        bookButton.getStyleClass().add("modern-button");
+//
+//        Label confirmationMessage = new Label();
+//
+//        bookButton.setOnAction(e -> {
+//            Toggle selectedToggle = roomToggleGroup.getSelectedToggle();
+//            if (selectedToggle == null) {
+//                confirmationMessage.setText("⚠ Please select a room.");
+//                confirmationMessage.setStyle("-fx-text-fill: red;");
+//                confirmationMessage.setAlignment(Pos.CENTER);
+//                return;
+//            }
+//
+//            try {
+//                Room selectedRoom = (Room) selectedToggle.getUserData();
+//                int roomNumber = selectedRoom.getRoomNumber();
+//                LocalDate start = startDatePicker.getValue();
+//                int days = Integer.parseInt(daysField.getText().trim());
+//
+//                if (days <= 0) {
+//                    confirmationMessage.setText("⚠ Nights must be greater than zero.");
+//                    confirmationMessage.setStyle("-fx-text-fill: red;");
+//                    return;
+//                }
+//
+//                Booking booking = hotel.bookRoom(customer, selectedRoom, start, days, selectedRoom.getPricePerNight() * days);
+//                selectedRoom.isAvailable = false;
+//                selectedRoom.setCustomer(customer);
+//                customer.setChecked(true);
+//                DBOperations.bookRoom(DBOperations.getIdUsername(customer.getUsername()), selectedRoom.getRoomNumber(), start, days,selectedRoom.getPricePerNight() * days);
+//        //        changeCheckInStatus(customer.getUsername(), true); // DB Code
+//                if (booking != null) {
+//                    confirmationMessage.setText("");
+//                    double totalCost = selectedRoom.getPricePerNight() * days;
+//                    LocalDate checkoutDate = start.plusDays(days);
+//
+//                    // Color code the confirmation message
+//                    TextFlow confirmationTextFlow = new TextFlow();
+//                    confirmationTextFlow.setTextAlignment(TextAlignment.CENTER);
+//                    confirmationTextFlow.setStyle("-fx-font-size: 14px;");
+//
+//                    Text bookingText = new Text("✅ Booked ");
+//                    bookingText.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(bookingText);
+//
+//                    Text roomText = new Text(" Room " + roomNumber);
+//                    roomText.setStyle("-fx-fill: #6fcf97;");
+//                    confirmationTextFlow.getChildren().add(roomText);
+//
+//                    Text successText = new Text(" successfully for ");
+//                    successText.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(successText);
+//
+//                    Text nightsText = new Text(days + " night(s)");
+//                    nightsText.setStyle("-fx-fill: gold;");
+//                    confirmationTextFlow.getChildren().add(nightsText);
+//
+//                    Text preTotalText = new Text("\n💰 Total Cost:");
+//                    preTotalText.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(preTotalText);
+//
+//                    Text totalCostText = new Text(" $" + totalCost);
+//                    totalCostText.setStyle("-fx-fill: #6fcf97;");
+//                    confirmationTextFlow.getChildren().add(totalCostText);
+//
+//                    Text adultsTextLabel = new Text("\n👤 Adults: ");
+//                    adultsTextLabel.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(adultsTextLabel);
+//                    Text adultsText = new Text(" " + adultsSpinner.getValue());
+//                    adultsText.setStyle("-fx-fill: #2d36db;");
+//                    confirmationTextFlow.getChildren().add(adultsText);
+//
+//                    Text childrenTextLabel = new Text("\n👶 Children: ");
+//                    childrenTextLabel.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(childrenTextLabel);
+//                    Text childrenText = new Text(" " + childrenSpinner.getValue());
+//                    childrenText.setStyle("-fx-fill: #2d36db;");
+//                    confirmationTextFlow.getChildren().add(childrenText);
+//
+//                    Text startText = new Text("\n📅 Start Date: ");
+//                    startText.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(startText);
+//
+//                    Text startDateText = new Text(" " + start);
+//                    startDateText.setStyle("-fx-fill: #2d9cdb;");
+//                    confirmationTextFlow.getChildren().add(startDateText);
+//
+//                    Text checkoutText = new Text("\n📅 Checkout Date: ");
+//                    checkoutText.setStyle("-fx-fill: white;");
+//                    confirmationTextFlow.getChildren().add(checkoutText);
+//
+//                    Text checkoutDateText = new Text(" " + checkoutDate);
+//                    checkoutDateText.setStyle("-fx-fill: gold;");
+//                    confirmationTextFlow.getChildren().add(checkoutDateText);
+//
+//                    VBox confirmationBox = new VBox(10, confirmationTextFlow);
+//                    confirmationBox.setAlignment(Pos.CENTER);
+//
+//
+//                    confirmationMessage.setGraphic(confirmationTextFlow);
+//
+//                    Button goToDashboardButton = new Button("Go to Dashboard");
+//                    goToDashboardButton.setOnAction(ev -> {
+//                        showCustomerDashboard(customer);
+//                    });
+//                    VBox vAfterBookingBox = new VBox(10, confirmationMessage, goToDashboardButton);
+//                    vAfterBookingBox.setAlignment(Pos.CENTER);
+//                    afterBookingBox.getChildren().clear();
+//                    afterBookingBox.getChildren().add(vAfterBookingBox);
+//
+//                    updateGrid.run();
+//                }
+//            } catch (NumberFormatException ex) {
+//                confirmationMessage.setText("⚠ Invalid input for nights.\n");
+//                confirmationMessage.setStyle("-fx-text-fill: red;");
+//            }
+//        });
+//
+//        VBox.setVgrow(confirmationMessage, Priority.ALWAYS);
+//        root2.getChildren().addAll(
+//                new Label("Booking Information"),
+//                new Label("Check-in Date:"), startDatePicker,
+//                afterBookingBox
+//        );
+//
+//
+//        VBox root3 = new VBox(10);
+//        root3.setPadding(new Insets(20));
+//        root3.getChildren().addAll(root, root2);
+//
+//        confirmationMessage.setMaxWidth(Double.MAX_VALUE/2);
+//
+//
+//
 private void showBookingPage(Customer customer) {
     VBox root = new VBox(10);
     root.setPadding(new Insets(20));
@@ -507,9 +736,6 @@ private void showBookingPage(Customer customer) {
     root2.setPadding(new Insets(20));
     root2.setAlignment(Pos.CENTER);
 
-    ComboBox<String> filterBox = new ComboBox<>();
-    filterBox.getItems().addAll("All", "Single", "Double", "Triple", "Suite");
-    filterBox.setValue("All");
 
     ComboBox<String> sortBox = new ComboBox<>();
     sortBox.getItems().addAll("Room Number Asc", "Room Number Desc", "Price Asc", "Price Desc");
@@ -522,17 +748,17 @@ private void showBookingPage(Customer customer) {
     roomGrid.setHgap(10);
     roomGrid.setVgap(10);
     roomGrid.setPadding(new Insets(10));
+    roomGrid.setAlignment(Pos.CENTER);
 
     ToggleGroup roomToggleGroup = new ToggleGroup();
 
     Runnable updateGrid = () -> {
         roomGrid.getChildren().clear();
 
-        String filter = filterBox.getValue();
         String searchText = searchField.getText().toLowerCase();
         String sortCriteria = sortBox.getValue();
 
-        ArrayList<Room> sortedRooms = new ArrayList<>(hotel.getAllRooms());
+        ArrayList<Room> sortedRooms = new ArrayList<>(Hotel.getAllRooms());
 
         switch (sortCriteria) {
             case "Room Number Asc":
@@ -551,10 +777,9 @@ private void showBookingPage(Customer customer) {
 
         int col = 0, row = 0;
         for (Room room : sortedRooms) {
-            boolean matchesFilter = filter.equals("All") || room.getClass().getSimpleName().startsWith(filter);
             boolean matchesSearch = String.valueOf(room.getRoomNumber()).contains(searchText);
 
-            if (!matchesFilter || !matchesSearch) continue;
+            if (!matchesSearch) continue;
 
             ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
             roomBtn.setMinSize(100, 60);
@@ -584,12 +809,11 @@ private void showBookingPage(Customer customer) {
     syncRoomAvailability();
     updateGrid.run();
 
-    filterBox.setOnAction(e -> updateGrid.run());
     sortBox.setOnAction(e -> updateGrid.run());
     searchField.setOnKeyReleased(e -> updateGrid.run());
 
     root.getChildren().addAll(
-            new Label("Filter by Room Type:"), filterBox,
+            new Label("Filter by Room Type:"),
             new Label("Sort by:"), sortBox,
             new Label("Search:"), searchField,
             roomGrid
