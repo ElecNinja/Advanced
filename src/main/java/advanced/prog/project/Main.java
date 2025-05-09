@@ -180,7 +180,6 @@ public class Main extends Application {
         fadeIn.setToValue(1.0);
         fadeIn.play();
         stage.show();
-
     }
 
     private void showLoginScreen() {
