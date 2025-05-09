@@ -411,6 +411,7 @@ public class Main extends Application {
 
 
 
+
         Button nextButton = new Button("Continue to Booking");
         nextButton.setMaxWidth(250);
         nextButton.setOnAction(e -> {
