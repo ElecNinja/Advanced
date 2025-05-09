@@ -56,7 +56,7 @@ public class Main extends Application {
 
 
     private void showWelcomeScreen() {
- // Making the welcome screen
+    // Making the welcome screen
         VBox vb = new VBox(30);
         vb.getStyleClass().add("v-box");
         vb.setPadding(new Insets(30));
@@ -89,7 +89,7 @@ public class Main extends Application {
         bgImageView.setPreserveRatio(false);
 
 
-        // Creatng the scene for the welcome screen
+        // Creating the scene for the welcome screen
         root.getChildren().addAll(bgImageView,  vb);
         scene = new Scene(root , 1525 , 750);
         loginButton.setOnAction(e -> showLoginScreen());
@@ -173,13 +173,11 @@ public class Main extends Application {
         scene = new Scene(root , 1525 , 750);
         scene.getStylesheets().add("styles.css");
         stage.setTitle("Customer Reviews");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setScene(scene);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
     private void showLoginScreen() {
@@ -259,7 +257,6 @@ public class Main extends Application {
         scene = new Scene(root, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setTitle("Home Page");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setScene(scene);
         stage.setTitle("Login - Hotel Ritz");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
@@ -278,6 +275,7 @@ public class Main extends Application {
 
         Label titleLabel = new Label("Welcome " + customer.getUsername() + "!");
         titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
+        titleLabel.setPadding(new Insets(0, 0, 50, 0));
         backButton.setOnAction(e -> showLoginScreen());
         backButton.setMaxWidth(100);
 
@@ -309,13 +307,11 @@ public class Main extends Application {
         scene = new Scene(dashboard, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Customer Dashboard");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), dashboard);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
     private  void showRatingPage(Customer customer){
@@ -480,14 +476,12 @@ public class Main extends Application {
 
         scene = new Scene(form, 1525, 750);
         scene.getStylesheets().add("styles.css");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Customer Info");
         stage.setScene(scene);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), form);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
 private void showBookingPage(Customer customer) {
@@ -725,13 +719,11 @@ private void showBookingPage(Customer customer) {
         scene = new Scene(root3, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Room Booking - Hotel Ritz");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root3);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
 
