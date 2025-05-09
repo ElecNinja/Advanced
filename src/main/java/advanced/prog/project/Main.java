@@ -35,7 +35,6 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
-<<<<<<< HEAD
 
 //        DBOperations.addRoom(new SingleRoom(104, 1000.0));
 //        DBOperations.addRoom(new DoubleRoom(105, 2000.0));
@@ -66,8 +65,6 @@ public class Main extends Application {
 
 //        DBOperations.removeRoom(501);
 
-
-=======
 //
 //        DBOperations.addRoom(new SingleRoom(116, 1000.0));
 //        DBOperations.addRoom(new DoubleRoom(117, 2000.0));
@@ -80,9 +77,6 @@ public class Main extends Application {
 //        DBOperations.updateRoom(101,1000, 1);
 
 
-
-
->>>>>>> parent of 2e51308 (Merge branch 'main' of https://github.com/ElecNinja/Advanced)
         Hotel.loadRoomsFromDB();
         this.stage = stage;
         showWelcomeScreen();
@@ -331,17 +325,15 @@ public class Main extends Application {
             checkOutBtn.setDisable(true);
         });
 
-<<<<<<< HEAD
+
         Label titleLabel = new Label("Dashboard");
         titleLabel.setPadding(new Insets(0, 0, 50, 0));
         titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
 
 
         VBox dashboard = new VBox(20, titleLabel, checkInBtn, checkOutBtn, backButton);
-=======
 
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, backButton);
->>>>>>> parent of 2e51308 (Merge branch 'main' of https://github.com/ElecNinja/Advanced)
+
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         scene = new Scene(dashboard, 1525, 750);
@@ -621,18 +613,7 @@ public class Main extends Application {
         Label adultsLabel = new Label("Adults");
         Label childrenLabel = new Label("Children");
 
-<<<<<<< HEAD
-        HBox formFields = new HBox(15);
-        formFields.setAlignment(Pos.CENTER);
-        formFields.getChildren().addAll(
-                createFormField("Check-in Date", startDatePicker),
-                createFormField("Nights", nightsField),
-                createFormField("Adults", adultsSpinner),
-                createFormField("Children", childrenSpinner)
-        );
-=======
->>>>>>> parent of 2e51308 (Merge branch 'main' of https://github.com/ElecNinja/Advanced)
-        VBox nightsBox = new VBox(10, nightsLabel, daysField);
+      VBox nightsBox = new VBox(10, nightsLabel, daysField);
         nightsBox.setAlignment(Pos.CENTER);
         VBox adultsBox = new VBox(10, adultsLabel, adultsSpinner);
         adultsBox.setAlignment(Pos.CENTER);
