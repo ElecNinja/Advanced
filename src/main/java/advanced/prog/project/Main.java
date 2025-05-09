@@ -272,6 +272,7 @@ public class Main extends Application {
         boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
+        Button bookingSummaryBtn = new Button("Booking Summary");
         Button backButton = new Button("← Back");
         backButton.setOnAction(e -> showLoginScreen());
         backButton.setMaxWidth(100);
@@ -299,7 +300,20 @@ public class Main extends Application {
             checkOutBtn.setDisable(true);
         });
 
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, backButton);
+        // Booking Summary
+        bookingSummaryBtn.setOnAction(e -> {
+            if (customer.isChecked()) {
+                System.out.println("Booking Summary: (Dummy Data)");
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("No Booking Found");
+                alert.setHeaderText("You haven't checked in yet.");
+                alert.setContentText("Please check in to view your booking summary.");
+                alert.showAndWait();
+            }
+        });
+
+        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         scene = new Scene(dashboard, 1525, 750);
