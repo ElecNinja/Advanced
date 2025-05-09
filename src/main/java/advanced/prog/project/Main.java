@@ -394,6 +394,7 @@ public class Main extends Application {
         scene = new Scene(root, 500, 500);
         scene.getStylesheets().add("styles.css");
         ratingStage.setScene(scene);
+        ratingStage.show();
     }
 
     private boolean fetchCheckInStatus(String username) {
