@@ -35,13 +35,36 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         this.hotel = new Hotel("Hotel Ritz");
+
+//        DBOperations.addRoom(new SingleRoom(104, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(105, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(106, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(107, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(108, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(109, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(110, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(111, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(112, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(113, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(114, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(115, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(201, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(202, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(203, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(301, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(302, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(303, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(401, 1000.0));
+//        DBOperations.addRoom(new DoubleRoom(402, 2000.0));
+//        DBOperations.addRoom(new TripleRoom(403, 3000.0));
+//        DBOperations.addRoom(new SingleRoom(501, 1000.0));
 //
-//        DBOperations.addRoom(new SingleRoom(116, 1000.0));
-//        DBOperations.addRoom(new DoubleRoom(117, 2000.0));
-//        DBOperations.addRoom(new TripleRoom(118, 3000.0));
-//        DBOperations.addRoom(new SingleRoom(119, 1000.0));
-//        DBOperations.addRoom(new DoubleRoom(120, 2000.0));
-//        DBOperations.addRoom(new TripleRoom(121, 3000.0));
+//        DBOperations.updateRoom(101, 1000.0, 1);
+//        DBOperations.updateRoom(102, 2000.0, 1);
+//        DBOperations.updateRoom(103, 3000.0, 1);
+
+//        DBOperations.removeRoom(501);
+
 
 
 //        DBOperations.updateRoom(101,1000, 1);
@@ -297,8 +320,12 @@ public class Main extends Application {
             checkOutBtn.setDisable(true);
         });
 
+        Label titleLabel = new Label("Dashboard");
+        titleLabel.setPadding(new Insets(0, 0, 50, 0));
+        titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
 
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, backButton);
+
+        VBox dashboard = new VBox(20, titleLabel, checkInBtn, checkOutBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         scene = new Scene(dashboard, 1525, 750);
@@ -359,6 +386,7 @@ public class Main extends Application {
         scene = new Scene(root, 500, 500);
         scene.getStylesheets().add("styles.css");
         ratingStage.setScene(scene);
+        ratingStage.show();
     }
 
     private boolean fetchCheckInStatus(String username) {
@@ -384,6 +412,10 @@ public class Main extends Application {
 
 
     private void showCustomerInfoPage() {
+
+        Label titleLabel = new Label("Register with us today!");
+        titleLabel.setPadding(new Insets(0, 0, 50, 0));
+        titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
 
         TextField userField = new TextField();
         userField.setPromptText("New user name");
@@ -475,7 +507,7 @@ public class Main extends Application {
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
 
-        VBox form = new VBox(10, userField, passField, nextButton, backButton);
+        VBox form = new VBox(10, titleLabel, userField, passField, nextButton, backButton);
         form.setAlignment(Pos.CENTER);
         form.setMaxWidth(400);
         VBox.setMargin(nextButton, new Insets(10, 20, 10, 20));
