@@ -736,9 +736,6 @@ private void showBookingPage(Customer customer) {
     root2.setPadding(new Insets(20));
     root2.setAlignment(Pos.CENTER);
 
-    ComboBox<String> filterBox = new ComboBox<>();
-    filterBox.getItems().addAll("All", "Single", "Double", "Triple", "Suite");
-    filterBox.setValue("All");
 
     ComboBox<String> sortBox = new ComboBox<>();
     sortBox.getItems().addAll("Room Number Asc", "Room Number Desc", "Price Asc", "Price Desc");
@@ -751,17 +748,17 @@ private void showBookingPage(Customer customer) {
     roomGrid.setHgap(10);
     roomGrid.setVgap(10);
     roomGrid.setPadding(new Insets(10));
+    roomGrid.setAlignment(Pos.CENTER);
 
     ToggleGroup roomToggleGroup = new ToggleGroup();
 
     Runnable updateGrid = () -> {
         roomGrid.getChildren().clear();
 
-        String filter = filterBox.getValue();
         String searchText = searchField.getText().toLowerCase();
         String sortCriteria = sortBox.getValue();
 
-        ArrayList<Room> sortedRooms = new ArrayList<>(hotel.getAllRooms());
+        ArrayList<Room> sortedRooms = new ArrayList<>(Hotel.getAllRooms());
 
         switch (sortCriteria) {
             case "Room Number Asc":
@@ -780,10 +777,9 @@ private void showBookingPage(Customer customer) {
 
         int col = 0, row = 0;
         for (Room room : sortedRooms) {
-            boolean matchesFilter = filter.equals("All") || room.getClass().getSimpleName().startsWith(filter);
             boolean matchesSearch = String.valueOf(room.getRoomNumber()).contains(searchText);
 
-            if (!matchesFilter || !matchesSearch) continue;
+            if (!matchesSearch) continue;
 
             ToggleButton roomBtn = new ToggleButton("Room " + room.getRoomNumber());
             roomBtn.setMinSize(100, 60);
@@ -813,12 +809,11 @@ private void showBookingPage(Customer customer) {
     syncRoomAvailability();
     updateGrid.run();
 
-    filterBox.setOnAction(e -> updateGrid.run());
     sortBox.setOnAction(e -> updateGrid.run());
     searchField.setOnKeyReleased(e -> updateGrid.run());
 
     root.getChildren().addAll(
-            new Label("Filter by Room Type:"), filterBox,
+            new Label("Filter by Room Type:"),
             new Label("Sort by:"), sortBox,
             new Label("Search:"), searchField,
             roomGrid
