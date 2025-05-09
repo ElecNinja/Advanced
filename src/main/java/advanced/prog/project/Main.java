@@ -3,7 +3,6 @@ package advanced.prog.project;
 import advanced.prog.project.models.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
@@ -31,6 +29,7 @@ public class Main extends Application {
     private Stage stage;
     private Hotel hotel;
     Scene scene;
+
 
 
     @Override
@@ -177,14 +176,11 @@ public class Main extends Application {
         scene = new Scene(root , 1525 , 750);
         scene.getStylesheets().add("styles.css");
         stage.setTitle("Customer Reviews");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setScene(scene);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
-
     }
 
     private void showLoginScreen() {
@@ -251,20 +247,15 @@ public class Main extends Application {
             }
         });
 
-
         Button backButton = new Button("← Back");
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
-
-
-
 
         root.getChildren().addAll(titleLabel, welcomebackLabel, nameField, passwordField, loginButton, backButton);
 
         scene = new Scene(root, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setTitle("Home Page");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setScene(scene);
         stage.setTitle("Login - Hotel Ritz");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root);
@@ -313,13 +304,11 @@ public class Main extends Application {
         scene = new Scene(dashboard, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Customer Dashboard");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), dashboard);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
     private  void showRatingPage(Customer customer){
@@ -366,12 +355,10 @@ public class Main extends Application {
             }
         });
         ratingStage.setTitle("Rate Your Experience");
-        ratingStage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         root.getChildren().addAll(titleLabel, ratingField, commentField, submitButton);
         scene = new Scene(root, 500, 500);
         scene.getStylesheets().add("styles.css");
         ratingStage.setScene(scene);
-        ratingStage.show();
     }
 
     private boolean fetchCheckInStatus(String username) {
@@ -495,14 +482,12 @@ public class Main extends Application {
 
         scene = new Scene(form, 1525, 750);
         scene.getStylesheets().add("styles.css");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Customer Info");
         stage.setScene(scene);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), form);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
     private void showBookingPage(Customer customer, int userID) {
@@ -536,7 +521,7 @@ public class Main extends Application {
             String searchText = searchField.getText().toLowerCase();
             int col = 0, row = 0;
 
-            for (Room room : hotel.getAllRooms()) {
+            for (Room room : Hotel.getAllRooms()) {
                 // Filter by Room Type and Search Text
                 boolean matchesFilter = filter.equals("All") || room.getClass().getSimpleName().startsWith(filter);
                 boolean matchesSearch = String.valueOf(room.getRoomNumber()).contains(searchText);
@@ -727,13 +712,11 @@ public class Main extends Application {
         scene = new Scene(root3, 1525, 750);
         scene.getStylesheets().add("styles.css");
         stage.setScene(scene);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
         stage.setTitle("Room Booking - Hotel Ritz");
         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), root3);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-        stage.show();
     }
 
 
