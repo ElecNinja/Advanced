@@ -62,16 +62,7 @@ public class Main extends Application {
 //        DBOperations.removeRoom(501);
 
 
-
-        hotel.addRoom(new DoubleRoom(201, 150.0, null));
-        hotel.addRoom(new DoubleRoom(202, 160.0, null));
-
-
-        hotel.addRoom(new TripleRoom(301, 200.0, null));
-        hotel.addRoom(new TripleRoom(302, 210.0, null));
-
-
-        hotel.addRoom(singleRoom);
+        Hotel.loadRoomsFromDB();
         this.stage = stage;
     showWelcomeScreen();
     }
