@@ -602,6 +602,8 @@ private void showBookingPage(Customer customer) {
 
     Label confirmationMessage = new Label();
 
+    Button goToDashboardButton = new Button("Go to Dashboard");
+    goToDashboardButton.setOnAction(ev -> showCustomerDashboard(customer));
     bookButton.setOnAction(e -> {
         Toggle selectedToggle = roomToggleGroup.getSelectedToggle();
         if (selectedToggle == null) {
@@ -685,10 +687,7 @@ private void showBookingPage(Customer customer) {
 
                 confirmationMessage.setGraphic(confirmationTextFlow);
 
-                Button goToDashboardButton = new Button("Go to Dashboard");
-                goToDashboardButton.setOnAction(ev -> showCustomerDashboard(customer));
-
-                VBox vAfterBookingBox = new VBox(10, confirmationMessage, goToDashboardButton);
+                VBox vAfterBookingBox = new VBox(10);
                 vAfterBookingBox.setAlignment(Pos.CENTER);
                 afterBookingBox.getChildren().clear();
                 afterBookingBox.getChildren().add(vAfterBookingBox);
@@ -706,7 +705,9 @@ private void showBookingPage(Customer customer) {
     root2.getChildren().addAll(
             new Label("Booking Information"),
             new Label("Check-in Date:"), startDatePicker,
-            afterBookingBox
+            afterBookingBox,
+            confirmationMessage,
+            goToDashboardButton
     );
 
     VBox root3 = new VBox(10);
