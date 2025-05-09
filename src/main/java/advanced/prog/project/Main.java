@@ -45,6 +45,7 @@ public class Main extends Application {
 //        DBOperations.updateRoom(103,200.0, 1);
 
 
+
         Hotel.loadRoomsFromDB();
         this.stage = stage;
     showWelcomeScreen();
@@ -274,8 +275,10 @@ public class Main extends Application {
         boolean hasCheckedIn = fetchCheckInStatus(customer.getUsername()); // DB Code
         Button checkInBtn = new Button("Check-In");
         Button checkOutBtn = new Button("Check-Out");
-        Button bookingSummaryBtn = new Button("Booking Summary");
         Button backButton = new Button("← Back");
+
+        Label titleLabel = new Label("Welcome " + customer.getUsername() + "!");
+        titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
         backButton.setOnAction(e -> showLoginScreen());
         backButton.setMaxWidth(100);
 
@@ -301,21 +304,7 @@ public class Main extends Application {
             checkInBtn.setDisable(false);
             checkOutBtn.setDisable(true);
         });
-
-        // Booking Summary
-        bookingSummaryBtn.setOnAction(e -> {
-            if (customer.isChecked()) {
-                System.out.println("Booking Summary: (Dummy Data)");
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("No Booking Found");
-                alert.setHeaderText("You haven't checked in yet.");
-                alert.setContentText("Please check in to view your booking summary.");
-                alert.showAndWait();
-            }
-        });
-
-        VBox dashboard = new VBox(20, checkInBtn, checkOutBtn, bookingSummaryBtn, backButton);
+        VBox dashboard = new VBox(20, titleLabel, checkInBtn, checkOutBtn, backButton);
         dashboard.setAlignment(Pos.CENTER);
         dashboard.setPadding(new Insets(20));
         scene = new Scene(dashboard, 1525, 750);
@@ -406,6 +395,9 @@ public class Main extends Application {
 
     private void showCustomerInfoPage() {
 
+        Label titleLabel = new Label("Register with us today!");
+        titleLabel.setStyle("-fx-font-size: 35px; -fx-text-fill: #4eb0e8;");
+
         TextField userField = new TextField();
         userField.setPromptText("New user name");
         userField.setMaxWidth(350);
@@ -481,7 +473,7 @@ public class Main extends Application {
         backButton.setMaxWidth(100);
         backButton.setOnAction(e -> showWelcomeScreen());
 
-        VBox form = new VBox(10, userField, passField, nextButton, backButton);
+        VBox form = new VBox(10, titleLabel, userField, passField, nextButton, backButton);
         form.setAlignment(Pos.CENTER);
         form.setMaxWidth(400);
         VBox.setMargin(nextButton, new Insets(10, 20, 10, 20));
@@ -799,7 +791,7 @@ private void showBookingPage(Customer customer) {
             roomBtn.setDisable(!room.isAvailable);
             Tooltip.install(roomBtn, new Tooltip("Price: $" + room.getPricePerNight()));
             roomGrid.add(roomBtn, col++, row);
-            if (col == 8) {
+            if (col == 12) {
                 col = 0;
                 row++;
             }
@@ -813,7 +805,6 @@ private void showBookingPage(Customer customer) {
     searchField.setOnKeyReleased(e -> updateGrid.run());
 
     root.getChildren().addAll(
-            new Label("Filter by Room Type:"),
             new Label("Sort by:"), sortBox,
             new Label("Search:"), searchField,
             roomGrid
