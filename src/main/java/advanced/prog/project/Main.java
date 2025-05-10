@@ -510,7 +510,7 @@ private void showBookingPage(Customer customer, int userID) {
 
     Runnable updateGrid = () -> {
         roomGrid.getChildren().clear();
-
+// sorting
         String searchText = searchField.getText().toLowerCase();
         String sortCriteria = sortBox.getValue();
 
