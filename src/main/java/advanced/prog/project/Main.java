@@ -39,10 +39,10 @@ public class Main extends Application {
 
 //        DoubleRoom doubleroom = new DoubleRoom(103, 200.0);
 //        DBOperations.addRoom(doubleroom);
-//        DBOperations.removeRoom(101);
-//        DoubleRoom singleroom = new DoubleRoom(101, 200.0);
+//        SingleRoom singleroom = new SingleRoom(101, 200.0);
 //        DBOperations.addRoom(singleroom);
-//        DBOperations.updateRoom(103,200.0, 1);
+//        TripleRoom tripleRoom = new TripleRoom(102,300.0);
+//        DBOperations.addRoom(tripleRoom);
 
 
 
@@ -295,7 +295,8 @@ public class Main extends Application {
 
         // Check-Out Logic
         checkOutBtn.setOnAction(e -> {
-            DBOperations.checkOutRoom(DBOperations.getIdUsername(customer.getUsername()));
+            DBOperations.checkOutRoom(userID);
+            syncRoomAvailability();
             customer.setChecked(false);
             showRatingPage(customer);
             checkInBtn.setDisable(false);

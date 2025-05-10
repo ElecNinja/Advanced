@@ -19,6 +19,14 @@ public abstract class Room extends Hotel {
         return roomNumber;
     }
 
+    public void setRoomNumber(int x){
+        roomNumber = x;
+    }
+    public void setRoomNumber(int x, Room room){
+        roomNumber = x;
+        room.setRoomNumber(x);
+    }
+
     public double getPricePerNight() {
         return pricePerNight;
     }

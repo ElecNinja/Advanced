@@ -5,6 +5,7 @@ public class SingleRoom extends Room {
         super(roomNumber, pricePerNight);
     }
 
+
     @Override
     public int getCapacity() {
         return 1;

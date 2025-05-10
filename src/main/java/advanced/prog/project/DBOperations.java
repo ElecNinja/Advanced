@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DBOperations {
 
-
+//add room---------------------------------------------------------------------------------------------------
     public static void addRoom(Room room) {
         Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
         if (conn != null) {
@@ -61,7 +61,7 @@ public class DBOperations {
             showAlert("Database connection failed.");}
 
     }
-
+    //remove ----------------------------------------------------------------------------------------------------
     public static void removeRoom(int roomNumber) {
         Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
         if (conn != null) {
@@ -105,7 +105,7 @@ public class DBOperations {
             showAlert("Database connection failed.");}
 
     }
-
+//update-------------------------------------------------------------------
     public static void updateRoom(int roomNumber, double price, int available) {
         Connection conn = DBconnection.connect();  // Call the connect method from DBconnection
         if (conn != null) {
@@ -523,6 +523,18 @@ public class DBOperations {
                     showAlert("Failed to add rating.");
                 }
 
+                // Insert new user
+                String query2 = "DELETE FROM bookings WHERE booking_id = ?";
+                PreparedStatement stmt2 = conn.prepareStatement(query);
+                stmt.setInt(1, booking_id);
+                int rowsInserted2 = stmt.executeUpdate();
+
+                if (rowsInserted2 > 0) {
+                    showAlert("Room checked out successfully.");
+                } else {
+                    showAlert("Failed to check out room.");
+                }
+
                 stmt.close();
                 conn.close();
             } catch (SQLException ex) {
@@ -570,21 +582,6 @@ public class DBOperations {
 
                 checkRs.close();
                 checkStmt.close();
-
-                // Insert new user
-                String query = "DELETE FROM bookings WHERE booking_id = ?";
-                PreparedStatement stmt = conn.prepareStatement(query);
-                stmt.setInt(1, booking_id);
-                int rowsInserted = stmt.executeUpdate();
-
-                if (rowsInserted > 0) {
-                    showAlert("Room checked out successfully.");
-                } else {
-                    showAlert("Failed to check out room.");
-                }
-
-                stmt.close();
-                conn.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 showAlert("Database error.");
